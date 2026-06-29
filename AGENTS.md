@@ -156,15 +156,15 @@ bun install --force --no-cache
 
 ## Release Model
 
-This package is published to npm through tag-based GitHub Actions.
+This package is published to npm automatically from GitHub Actions on pushes to `main`.
 
 Current flow:
 
 1. change `zuedocs`
-2. bump version in `package.json`
-3. push commit
-4. push tag like `v0.1.7`
-5. `release.yml` publishes to npm
+2. push to `main`
+3. `release.yml` validates the package
+4. `release.yml` bumps `package.json` by one patch version
+5. `release.yml` commits that bump, tags it like `v0.1.7`, and publishes to npm
 
 After publishing, downstream repos may need:
 

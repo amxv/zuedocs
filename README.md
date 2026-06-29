@@ -219,10 +219,11 @@ This is useful when another tool or agent wants the source markdown instead of r
 
 Release flow:
 
-1. change `zuedocs`
-2. bump the version
-3. push a tag like `v0.1.7`
-4. GitHub Actions publishes the package to npm
-5. downstream repos update via Renovate or manual dependency bumps
+1. push a change to `main`
+2. GitHub Actions validates the package
+3. GitHub Actions bumps `package.json` by one patch version
+4. GitHub Actions creates a release commit and tag like `v0.1.7`
+5. GitHub Actions publishes that version to npm
+6. downstream repos update via Renovate or manual dependency bumps
 
-This keeps shared docs UI centralized instead of copied across repos.
+Every non-bot push to `main` produces a new patch release automatically. This keeps shared docs UI centralized instead of copied across repos.

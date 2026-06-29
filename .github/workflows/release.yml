@@ -2,18 +2,21 @@ name: release
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   publish:
+    if: github.actor != 'github-actions[bot]' && !contains(github.event.head_commit.message, '[skip release]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -26,15 +29,6 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Verify tag matches package version
-        run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
-          if [ "$TAG_VERSION" != "$PACKAGE_VERSION" ]; then
-            echo "Tag version $TAG_VERSION does not match package.json version $PACKAGE_VERSION"
-            exit 1
-          fi
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
@@ -44,7 +38,27 @@ jobs:
           bun run build
           npm pack --dry-run
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump patch version
+        run: |
+          npm version patch --no-git-tag-version
+          VERSION="$(node -p "require('./package.json').version")"
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Commit release version
+        run: |
+          git add package.json
+          git commit -m "chore: release v${RELEASE_VERSION} [skip ci] [skip release]"
+          git tag "v${RELEASE_VERSION}"
+
       - name: Publish to npm
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Push release commit and tag
+        run: git push origin HEAD:main --follow-tags
