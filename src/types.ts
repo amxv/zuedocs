@@ -3,10 +3,20 @@ export interface SiteConfig {
   strapline: string;
   description: string;
   repoUrl: string;
+  footerSections?: FooterSection[];
 }
 
 export interface PrimaryNavItem {
   href: string;
   label: string;
   external?: boolean;
+}
+
+export interface FooterSection {
+  title: string;
+  text?: string;
+  linkHref?: string;
+  linkLabel?: string;
+  linkPrefix?: string;
+  linkSuffix?: string;
 }

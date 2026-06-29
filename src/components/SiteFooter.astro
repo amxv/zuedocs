@@ -1,37 +1,53 @@
 ---
-import type { SiteConfig } from "../types";
+import type { FooterSection, SiteConfig } from "../types";
 
 interface Props {
   siteConfig: SiteConfig;
 }
 
 const { siteConfig } = Astro.props;
+
+const footerSections: FooterSection[] = siteConfig.footerSections ?? [
+  {
+    title: siteConfig.name,
+    text:
+      "A reusable editorial docs shell for teams that want a credible first impression before they start adding product-specific prose."
+  },
+  {
+    title: "What ships in the template",
+    text:
+      "Landing page sections, a docs collection, table-of-contents pages, starter guidance, and enough deployment notes to ship on Vercel with a Cloudflare-managed domain."
+  },
+  {
+    title: "Template repo",
+    text:
+      "Adapt the content, point the nav to your repo, and publish the static output wherever your docs belong. The default source lives at",
+    linkHref: siteConfig.repoUrl,
+    linkLabel: siteConfig.repoUrl,
+    linkPrefix: " ",
+    linkSuffix: "."
+  }
+];
 ---
 
 <footer class="site-footer">
   <div class="shell site-footer__inner">
-    <div>
-      <p class="site-footer__title">{siteConfig.name}</p>
-      <p>
-        A reusable editorial docs shell for teams that want a credible first
-        impression before they start adding product-specific prose.
-      </p>
-    </div>
-    <div>
-      <p class="site-footer__title">What ships in the template</p>
-      <p>
-        Landing page sections, a docs collection, table-of-contents pages,
-        starter guidance, and enough deployment notes to ship on Vercel with a
-        Cloudflare-managed domain.
-      </p>
-    </div>
-    <div>
-      <p class="site-footer__title">Template repo</p>
-      <p>
-        Adapt the content, point the nav to your repo, and publish the static
-        output wherever your docs belong. The default source lives at
-        <a href={siteConfig.repoUrl} target="_blank" rel="noreferrer"> {siteConfig.repoUrl}</a>.
-      </p>
-    </div>
+    {footerSections.map((section) => (
+      <div>
+        <p class="site-footer__title">{section.title}</p>
+        <p>
+          {section.text}
+          {section.linkHref && (
+            <>
+              {section.linkPrefix}
+              <a href={section.linkHref} target="_blank" rel="noreferrer">
+                {section.linkLabel ?? section.linkHref}
+              </a>
+              {section.linkSuffix}
+            </>
+          )}
+        </p>
+      </div>
+    ))}
   </div>
 </footer>
