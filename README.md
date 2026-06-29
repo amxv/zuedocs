@@ -37,6 +37,18 @@ bun run check
 bun run build
 ```
 
+## Raw markdown routes
+
+Every docs page also has a raw markdown URL by appending `.md` to the route.
+
+Examples:
+
+- `/docs.md` returns a plain markdown index of the docs collection
+- `/docs/quickstart.md` returns the raw source for that guide
+- `/docs/deployment.md` returns the raw source for that guide
+
+This is useful when you want to fetch the original markdown directly instead of the rendered HTML page.
+
 ## Repo structure
 
 ```text
