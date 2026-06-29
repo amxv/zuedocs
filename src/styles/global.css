@@ -101,6 +101,7 @@ p {
 .site-nav__link {
   font-size: 0.875rem;
   color: var(--muted);
+  text-underline-offset: 0.18em;
 }
 
 .site-nav__link:hover,
