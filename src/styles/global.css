@@ -32,7 +32,13 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
   transition: color 0.15s ease;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 img {
@@ -101,7 +107,6 @@ p {
 .site-nav__link {
   font-size: 0.875rem;
   color: var(--muted);
-  text-underline-offset: 0.18em;
 }
 
 .site-nav__link:hover,
