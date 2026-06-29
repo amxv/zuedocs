@@ -1,5 +1,5 @@
 {
-  "name": "@amxv/zuedocs",
+  "name": "zuedocs",
   "version": "0.1.0",
   "description": "Reusable Astro docs template, styles, and client-side docs enhancements for amxv projects.",
   "private": false,

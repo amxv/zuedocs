@@ -1,1 +1,1 @@
-export const packageName = "@amxv/zuedocs";
+export const packageName = "zuedocs";

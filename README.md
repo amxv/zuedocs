@@ -98,30 +98,30 @@ ZueDocs can also be consumed by other Astro docs sites so improvements to shared
 Install the shared package:
 
 ```bash
-bun add -d @amxv/zuedocs
+bun add -d zuedocs
 ```
 
 Import the shared docs design system from your local `src/styles/global.css`:
 
 ```css
-@import "@amxv/zuedocs/styles.css";
+@import "zuedocs/styles.css";
 ```
 
 Import the shared code-block, Mermaid, and table enhancements in your docs route:
 
 ```astro
 <script>
-  import "@amxv/zuedocs/docsEnhancements";
+  import "zuedocs/docsEnhancements";
 </script>
 ```
 
 The package currently exports:
 
-- `@amxv/zuedocs/styles.css` for the shared visual system
-- `@amxv/zuedocs/docsEnhancements` for copy buttons, Mermaid rendering/fullscreen controls, and responsive Markdown table wrappers
-- `@amxv/zuedocs/layouts/BaseLayout.astro`
-- `@amxv/zuedocs/layouts/DocsPageLayout.astro`
-- `@amxv/zuedocs/components/SiteHeader.astro`
-- `@amxv/zuedocs/components/SiteFooter.astro`
+- `zuedocs/styles.css` for the shared visual system
+- `zuedocs/docsEnhancements` for copy buttons, Mermaid rendering/fullscreen controls, and responsive Markdown table wrappers
+- `zuedocs/layouts/BaseLayout.astro`
+- `zuedocs/layouts/DocsPageLayout.astro`
+- `zuedocs/components/SiteHeader.astro`
+- `zuedocs/components/SiteFooter.astro`
 
 For local consumers before the npm package is published, use a GitHub dependency pinned to a commit SHA. After publishing, switch downstream docs sites to the npm version range.
