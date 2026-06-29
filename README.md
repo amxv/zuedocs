@@ -1,130 +1,131 @@
 # ZueDocs
 
-ZueDocs is a reusable Astro docs-site template based on the overall design language of the current Gooselake site, but generalized into a clean starter for any product or internal documentation property.
+`zuedocs` is a reusable Astro docs shell for product docs sites.
 
-It ships with:
+It gives you a shared presentation layer for:
 
-- a polished landing page
-- a grouped docs index
-- markdown-powered docs pages with a sticky navigation and generated table of contents
-- starter guidance for Vercel deployment and Cloudflare DNS wiring
-- a lightweight GitHub Actions CI check
+- landing pages
+- docs index pages
+- docs article pages with sidebar and table of contents
+- shared styles
+- client-side docs enhancements like copy buttons, Mermaid rendering, and responsive table wrappers
 
-## Stack
+The intended model is:
 
-- Astro 7
-- TypeScript
-- Bun for package management and scripts
-- Static output suitable for Vercel
+1. keep shared docs UI in `zuedocs`
+2. publish it to npm
+3. let downstream docs repos consume it as a dependency
+4. keep repo-specific content and branding local
 
-## Local development
+## What stays local in each docs repo
 
-```bash
-bun install
-bun run dev
-```
+Each consuming repo should keep these pieces in its own codebase:
 
-Open the local Astro URL and start by editing:
-
+- markdown docs content
 - `src/data/docs.ts`
-- `src/pages/index.astro`
-- `src/content/docs/*.md`
+- homepage and product copy
+- repo-specific Astro and deployment config
 
-## Checks
+`src/data/docs.ts` is the seam between the shared shell and the local site. At a high level it defines:
 
-```bash
-bun run check
-bun run build
-```
+- `siteConfig`
+- `primaryNav`
+- `docCategories`
 
-## Raw markdown routes
+## Package surface
 
-Every docs page also has a raw markdown URL by appending `.md` to the route.
+`zuedocs` currently exports:
 
-Examples:
+- `zuedocs/layouts/BaseLayout.astro`
+- `zuedocs/layouts/DocsPageLayout.astro`
+- `zuedocs/components/SiteHeader.astro`
+- `zuedocs/components/SiteFooter.astro`
+- `zuedocs/docsEnhancements`
+- `zuedocs/styles.css`
+- `zuedocs/types`
 
-- `/docs.md` returns a plain markdown index of the docs collection
-- `/docs/quickstart.md` returns the raw source for that guide
-- `/docs/deployment.md` returns the raw source for that guide
+The exported types currently include:
 
-This is useful when you want to fetch the original markdown directly instead of the rendered HTML page.
+- `SiteConfig`
+- `PrimaryNavItem`
+- `FooterSection`
 
-## Repo structure
+`SiteConfig` supports:
 
-```text
-src/
-  components/        Header and footer
-  content/docs/      Markdown guides
-  data/              Site config and category definitions
-  layouts/           Base and docs article layouts
-  pages/             Landing page and docs routes
-  styles/            Global design system
-.github/workflows/   CI validation
-public/              Static assets
-```
+- `name`
+- `strapline`
+- `description`
+- `repoUrl`
+- optional `footerSections`
 
-## Deploying to Vercel
+## Scaffold a new docs site
 
-1. Import the repo into Vercel or run `vercel` locally to link it.
-2. Keep `bun run build` as the build command if Vercel does not infer it.
-3. Ensure the output directory is `dist`.
-4. Use `vercel --prod` once the `main` branch is ready.
+Use the scaffold CLI when you want a brand new docs app with the shared shell already wired in.
 
-## Cloudflare DNS workflow
-
-This machine already has a `cf` CLI workflow for Cloudflare DNS. Prefer that over editing records manually.
-
-Common commands:
-
-```bash
-cf doctor
-cf cname docs cname.vercel-dns.com --proxied=false
-cf txt _vercel "verification-token"
-```
-
-Use `--proxied=false` for Vercel verification or ownership records unless you explicitly want proxying.
-
-## Customizing the template
-
-- Replace the content files with your actual docs and update the category enum if the taxonomy changes.
-- Update `siteConfig` in `src/data/docs.ts` with your product name, description, and repository URL.
-- Adjust the visual system in `src/styles/global.css` if you need a different tone while keeping the layout primitives.
-- Add more guides to `src/content/docs` and control order with the `order` frontmatter field.
-
-## Scaffolding a new docs site
-
-Generate a thin Astro docs site with the shared package already wired in:
+Preferred command:
 
 ```bash
 bunx zuedocs init my-docs
 ```
 
-or:
+Alias form:
 
 ```bash
 bunx --package zuedocs create-zuedocs my-docs
 ```
 
-The scaffold keeps the repo-specific surface local:
+Do not use plain `bunx create-zuedocs my-docs`. `create-zuedocs` is a bin inside the `zuedocs` package, not a standalone npm package.
 
-- markdown docs content
+### Important behavior
+
+`zuedocs init` requires an empty target directory. It is a scaffold command, not an in-place migration tool.
+
+That means:
+
+- good: `bunx zuedocs init docs-site`
+- bad: running it at the root of an existing non-empty repo
+
+### Existing project pattern
+
+If you already have an application repo, create a docs subdirectory instead of trying to scaffold over the root.
+
+Example:
+
+```text
+my-project/
+  app/
+  internal/
+  package.json or go.mod
+  docs-site/
+```
+
+Recommended flow:
+
+```bash
+bunx zuedocs init docs-site
+cd docs-site
+bun install
+bun run check
+bun run build
+```
+
+Then customize:
+
 - `src/data/docs.ts`
-- homepage and product copy
-- Astro and deployment config
+- `src/pages/index.astro`
+- `src/content/docs/*.md`
 
-It imports the shared docs shell from `zuedocs`.
+## Use it inside an existing Astro docs site
 
-## Using ZueDocs as a shared package
+If you already have an Astro docs site and only want the shared shell, install the package and wire it in manually.
 
-ZueDocs can also be consumed by other Astro docs sites so improvements to shared docs UI flow through dependency updates instead of copy-pasting files across repositories.
-
-Install the shared package:
+Install:
 
 ```bash
 bun add -d zuedocs
 ```
 
-Import the shared layouts and docs enhancement runtime:
+Example:
 
 ```astro
 ---
@@ -139,7 +140,11 @@ import { primaryNav, siteConfig } from "../data/docs";
   siteConfig={siteConfig}
   primaryNav={primaryNav}
 >
-  <DocsPageLayout title="Guide title" description="Guide summary" category="Start">
+  <DocsPageLayout
+    title="Guide title"
+    description="Guide summary"
+    category="Start"
+  >
     <p>Your docs content.</p>
   </DocsPageLayout>
 </BaseLayout>
@@ -149,14 +154,75 @@ import { primaryNav, siteConfig } from "../data/docs";
 </script>
 ```
 
-The package currently exports:
+## Example `docs.ts`
 
-- `zuedocs/styles.css` for the shared visual system
-- `zuedocs/docsEnhancements` for copy buttons, Mermaid rendering/fullscreen controls, and responsive Markdown table wrappers
-- `zuedocs/layouts/BaseLayout.astro`
-- `zuedocs/layouts/DocsPageLayout.astro`
-- `zuedocs/components/SiteHeader.astro`
-- `zuedocs/components/SiteFooter.astro`
-- `zuedocs/types` for `SiteConfig` and `PrimaryNavItem`
+```ts
+export const siteConfig = {
+  name: "My Product",
+  strapline: "Documentation",
+  description: "Docs for My Product.",
+  repoUrl: "https://github.com/my-org/my-product",
+  footerSections: [
+    {
+      title: "My Product",
+      text: "Short footer description for the docs site."
+    },
+    {
+      title: "Repository",
+      linkPrefix: "Source: ",
+      linkHref: "https://github.com/my-org/my-product",
+      linkLabel: "github.com/my-org/my-product"
+    }
+  ]
+} as const;
 
-For local consumers before the npm package is published, use a GitHub dependency pinned to a commit SHA. After publishing, switch downstream docs sites to the npm version range.
+export const docCategories = ["Start", "Guides", "Operations"] as const;
+
+export const primaryNav = [
+  { href: "/", label: "Overview" },
+  { href: "/docs", label: "Docs" },
+  { href: siteConfig.repoUrl, label: "GitHub", external: true }
+];
+```
+
+## Local development
+
+For this repo:
+
+```bash
+bun install
+bun run dev
+```
+
+Validation:
+
+```bash
+bun run check
+bun run build
+```
+
+## Raw markdown routes
+
+The docs routes also expose raw markdown endpoints.
+
+Examples:
+
+- `/docs.md`
+- `/docs/quickstart.md`
+- `/docs/deployment.md`
+
+This is useful when another tool or agent wants the source markdown instead of rendered HTML.
+
+## Release model
+
+`zuedocs` is designed to be published and consumed as a versioned dependency.
+
+Release flow:
+
+1. change `zuedocs`
+2. bump the version
+3. push a tag like `v0.1.7`
+4. GitHub Actions publishes the package to npm
+5. downstream repos update via Renovate or manual dependency bumps
+
+This keeps shared docs UI centralized instead of copied across repos.
