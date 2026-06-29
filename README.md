@@ -102,7 +102,7 @@ bunx zuedocs init my-docs
 or:
 
 ```bash
-bunx create-zuedocs my-docs
+bunx --package zuedocs create-zuedocs my-docs
 ```
 
 The scaffold keeps the repo-specific surface local:
