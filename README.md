@@ -90,3 +90,38 @@ Use `--proxied=false` for Vercel verification or ownership records unless you ex
 - Update `siteConfig` in `src/data/docs.ts` with your product name, description, and repository URL.
 - Adjust the visual system in `src/styles/global.css` if you need a different tone while keeping the layout primitives.
 - Add more guides to `src/content/docs` and control order with the `order` frontmatter field.
+
+## Using ZueDocs as a shared package
+
+ZueDocs can also be consumed by other Astro docs sites so improvements to shared docs UI flow through dependency updates instead of copy-pasting files across repositories.
+
+Install the shared package:
+
+```bash
+bun add -d @amxv/zuedocs
+```
+
+Import the shared docs design system from your local `src/styles/global.css`:
+
+```css
+@import "@amxv/zuedocs/styles.css";
+```
+
+Import the shared code-block, Mermaid, and table enhancements in your docs route:
+
+```astro
+<script>
+  import "@amxv/zuedocs/docsEnhancements";
+</script>
+```
+
+The package currently exports:
+
+- `@amxv/zuedocs/styles.css` for the shared visual system
+- `@amxv/zuedocs/docsEnhancements` for copy buttons, Mermaid rendering/fullscreen controls, and responsive Markdown table wrappers
+- `@amxv/zuedocs/layouts/BaseLayout.astro`
+- `@amxv/zuedocs/layouts/DocsPageLayout.astro`
+- `@amxv/zuedocs/components/SiteHeader.astro`
+- `@amxv/zuedocs/components/SiteFooter.astro`
+
+For local consumers before the npm package is published, use a GitHub dependency pinned to a commit SHA. After publishing, switch downstream docs sites to the npm version range.
