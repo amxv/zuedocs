@@ -1,0 +1,8 @@
+tmp/
+.DS_Store
+target/
+node_modules/
+/examples/.gg-runtime/
+.astro/
+dist/
+.vercel/
