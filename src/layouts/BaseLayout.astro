@@ -2,13 +2,23 @@
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import "../styles/global.css";
+import type { PrimaryNavItem, SiteConfig } from "../types";
 
 interface Props {
   title: string;
   description: string;
+  siteConfig: SiteConfig;
+  primaryNav: PrimaryNavItem[];
+  faviconHref?: string;
 }
 
-const { title, description } = Astro.props;
+const {
+  title,
+  description,
+  siteConfig,
+  primaryNav,
+  faviconHref = "/favicon.svg"
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -18,16 +28,16 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={faviconHref} type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   </head>
   <body>
-    <SiteHeader />
+    <SiteHeader siteConfig={siteConfig} primaryNav={primaryNav} />
     <main>
       <slot />
     </main>
-    <SiteFooter />
+    <SiteFooter siteConfig={siteConfig} />
   </body>
 </html>

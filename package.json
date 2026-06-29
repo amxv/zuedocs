@@ -1,6 +1,6 @@
 {
   "name": "zuedocs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Reusable Astro docs template, styles, and client-side docs enhancements for amxv projects.",
   "private": false,
   "type": "module",
@@ -14,6 +14,10 @@
     "url": "https://github.com/amxv/zuedocs/issues"
   },
   "packageManager": "bun@1.3.11",
+  "bin": {
+    "zuedocs": "./bin/zuedocs.js",
+    "create-zuedocs": "./bin/zuedocs.js"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -30,6 +34,7 @@
     "typescript": "^5.9.2"
   },
   "files": [
+    "bin",
     "src",
     "public",
     "README.md",
@@ -37,6 +42,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./types": "./src/types.ts",
     "./styles.css": "./src/styles/global.css",
     "./docsEnhancements": "./src/scripts/docsEnhancements.ts",
     "./layouts/BaseLayout.astro": "./src/layouts/BaseLayout.astro",

@@ -91,6 +91,29 @@ Use `--proxied=false` for Vercel verification or ownership records unless you ex
 - Adjust the visual system in `src/styles/global.css` if you need a different tone while keeping the layout primitives.
 - Add more guides to `src/content/docs` and control order with the `order` frontmatter field.
 
+## Scaffolding a new docs site
+
+Generate a thin Astro docs site with the shared package already wired in:
+
+```bash
+bunx zuedocs init my-docs
+```
+
+or:
+
+```bash
+bunx create-zuedocs my-docs
+```
+
+The scaffold keeps the repo-specific surface local:
+
+- markdown docs content
+- `src/data/docs.ts`
+- homepage and product copy
+- Astro and deployment config
+
+It imports the shared docs shell from `zuedocs`.
+
 ## Using ZueDocs as a shared package
 
 ZueDocs can also be consumed by other Astro docs sites so improvements to shared docs UI flow through dependency updates instead of copy-pasting files across repositories.
@@ -101,15 +124,26 @@ Install the shared package:
 bun add -d zuedocs
 ```
 
-Import the shared docs design system from your local `src/styles/global.css`:
-
-```css
-@import "zuedocs/styles.css";
-```
-
-Import the shared code-block, Mermaid, and table enhancements in your docs route:
+Import the shared layouts and docs enhancement runtime:
 
 ```astro
+---
+import BaseLayout from "zuedocs/layouts/BaseLayout.astro";
+import DocsPageLayout from "zuedocs/layouts/DocsPageLayout.astro";
+import { primaryNav, siteConfig } from "../data/docs";
+---
+
+<BaseLayout
+  title={`${siteConfig.name} | ${siteConfig.strapline}`}
+  description={siteConfig.description}
+  siteConfig={siteConfig}
+  primaryNav={primaryNav}
+>
+  <DocsPageLayout title="Guide title" description="Guide summary" category="Start">
+    <p>Your docs content.</p>
+  </DocsPageLayout>
+</BaseLayout>
+
 <script>
   import "zuedocs/docsEnhancements";
 </script>
@@ -123,5 +157,6 @@ The package currently exports:
 - `zuedocs/layouts/DocsPageLayout.astro`
 - `zuedocs/components/SiteHeader.astro`
 - `zuedocs/components/SiteFooter.astro`
+- `zuedocs/types` for `SiteConfig` and `PrimaryNavItem`
 
 For local consumers before the npm package is published, use a GitHub dependency pinned to a commit SHA. After publishing, switch downstream docs sites to the npm version range.

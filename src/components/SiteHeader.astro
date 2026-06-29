@@ -1,7 +1,12 @@
 ---
-import { primaryNav } from "../data/docs";
-import { siteConfig } from "../data/docs";
+import type { PrimaryNavItem, SiteConfig } from "../types";
 
+interface Props {
+  primaryNav: PrimaryNavItem[];
+  siteConfig: SiteConfig;
+}
+
+const { primaryNav, siteConfig } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
