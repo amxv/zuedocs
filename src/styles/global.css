@@ -151,6 +151,7 @@ p {
   font-size: 2.75rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  text-wrap: balance;
 }
 
 .hero__lede {
@@ -407,6 +408,7 @@ p {
 .docs-hero h1 {
   font-size: 2.25rem;
   margin-bottom: 1rem;
+  text-wrap: balance;
 }
 
 .docs-hero p {
