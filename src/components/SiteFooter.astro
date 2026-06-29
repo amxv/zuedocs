@@ -7,7 +7,7 @@ interface Props {
 
 const { siteConfig } = Astro.props;
 
-const footerSections: FooterSection[] = siteConfig.footerSections ?? [
+const footerSections: readonly FooterSection[] = siteConfig.footerSections ?? [
   {
     title: siteConfig.name,
     text:

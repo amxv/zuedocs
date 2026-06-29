@@ -3,7 +3,7 @@ export interface SiteConfig {
   strapline: string;
   description: string;
   repoUrl: string;
-  footerSections?: FooterSection[];
+  footerSections?: readonly FooterSection[];
 }
 
 export interface PrimaryNavItem {
