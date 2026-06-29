@@ -301,20 +301,51 @@ p {
   gap: 2rem;
 }
 
+.docs-index-hero {
+  padding-top: 4.5rem;
+  padding-bottom: 2.5rem;
+}
+
+.docs-index-hero h1 {
+  max-width: 18ch;
+  margin-top: 0.75rem;
+  font-size: clamp(2.6rem, 4.8vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.docs-index-hero p:last-child {
+  max-width: 70rem;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.docs-index {
+  padding-top: 1.5rem;
+  padding-bottom: 4.5rem;
+}
+
 .docs-index__group {
+  margin: 0;
+}
+
+.docs-index__group + .docs-index__group {
   margin-top: 3rem;
-  margin-bottom: 3rem;
 }
 
 .docs-index__group-head {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
 .docs-teaser__card,
 .docs-index__card {
-  padding: 2rem;
+  padding: 2rem 2rem 2.25rem;
   border: 1px solid var(--line);
   border-radius: 4px;
   display: block;
@@ -406,8 +437,13 @@ p {
   max-width: 48rem;
 }
 
+.docs-hero {
+  padding-bottom: 2.5rem;
+}
+
 .docs-hero h1 {
   font-size: 2.25rem;
+  margin-top: 0.75rem;
   margin-bottom: 1rem;
   text-wrap: balance;
 }
@@ -415,7 +451,9 @@ p {
 .docs-hero p {
   font-size: 1.125rem;
   color: var(--muted);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  max-width: 42rem;
+  line-height: 1.55;
 }
 
 .docs-copy h2,
@@ -773,6 +811,27 @@ body.has-docs-expanded-diagram {
   }
   .docs-sidebar {
     display: none;
+  }
+  .docs-index-hero {
+    padding-top: 3rem;
+    padding-bottom: 2rem;
+  }
+  .docs-index-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.1rem, 8vw, 3rem);
+  }
+  .docs-index-hero p:last-child {
+    font-size: 1.05rem;
+  }
+  .docs-index {
+    padding-top: 1rem;
+    padding-bottom: 3.5rem;
+  }
+  .docs-index__group + .docs-index__group {
+    margin-top: 2.25rem;
+  }
+  .docs-index__card {
+    padding: 1.5rem;
   }
   .hero h1 {
     font-size: 2rem;

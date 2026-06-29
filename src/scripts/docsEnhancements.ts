@@ -34,19 +34,11 @@ async function copyText(text: string, button: HTMLButtonElement) {
   const originalLabel = button.getAttribute("aria-label") ?? "Copy code block";
 
   try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.setAttribute("readonly", "");
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.append(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      textarea.remove();
+    if (!navigator.clipboard?.writeText) {
+      throw new Error("Clipboard API unavailable in this browser context");
     }
+
+    await navigator.clipboard.writeText(text);
 
     setIconButton(button, ICON_CHECK, "Copied");
     button.classList.add("is-copied");
