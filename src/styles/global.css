@@ -489,7 +489,6 @@ p {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .docs-page-actions__copy,
@@ -538,8 +537,8 @@ p {
 }
 
 .docs-page-actions__copy.is-copied {
-  background: var(--ink);
-  color: var(--bg);
+  background: transparent;
+  color: var(--ink);
 }
 
 .docs-page-actions__copy.is-failed {
