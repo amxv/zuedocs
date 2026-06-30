@@ -668,6 +668,17 @@ p {
   height: 0.95rem;
 }
 
+.docs-page-actions__item-icon .docs-page-actions__brand-icon--markdown {
+  width: 1.1rem;
+  height: 0.72rem;
+}
+
+.docs-page-actions__item-icon .docs-page-actions__brand-icon--openai,
+.docs-page-actions__item-icon .docs-page-actions__brand-icon--claude {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
 .docs-page-actions__item-copy {
   display: grid;
   gap: 0.1rem;
