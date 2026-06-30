@@ -232,19 +232,58 @@ function getAskUrl(base: string, parameter: string, sourceUrl: string) {
   return url.href;
 }
 
-function setDocsPageActionStatus(root: HTMLElement, text: string) {
-  const triggerLabel = root.querySelector<HTMLElement>("[data-docs-page-actions-trigger-label]");
+async function writeToClipboard(text: string) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch {
+      // Fall through to the textarea fallback below. Some browser contexts expose
+      // navigator.clipboard but still reject writes without a user gesture.
+    }
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "0";
+  textarea.style.left = "0";
+  textarea.style.width = "1px";
+  textarea.style.height = "1px";
+  textarea.style.opacity = "0";
+
+  document.body.append(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+
+  if (!copied) {
+    throw new Error("Clipboard copy fallback failed");
+  }
+}
+
+function setDocsPageActionStatus(root: HTMLElement, text: string, state: "idle" | "copying" | "copied" | "failed") {
+  const copyButton = root.querySelector<HTMLButtonElement>("[data-docs-page-copy]");
   const copyLabel = root.querySelector<HTMLElement>("[data-docs-page-copy-label]");
 
-  if (triggerLabel) triggerLabel.textContent = text;
   if (copyLabel) copyLabel.textContent = text;
+
+  if (copyButton) {
+    copyButton.classList.toggle("is-copying", state === "copying");
+    copyButton.classList.toggle("is-copied", state === "copied");
+    copyButton.classList.toggle("is-failed", state === "failed");
+    copyButton.setAttribute(
+      "aria-label",
+      state === "copied" ? "Copied page as Markdown" : state === "failed" ? "Copy failed" : "Copy page as Markdown"
+    );
+  }
 }
 
 async function copyMarkdownPage(root: HTMLElement) {
-  const details = root.querySelector<HTMLDetailsElement>(".docs-page-actions__details");
   const markdownUrl = getMarkdownUrl();
 
-  setDocsPageActionStatus(root, "Copying…");
+  setDocsPageActionStatus(root, "Copying…", "copying");
 
   try {
     const response = await fetch(markdownUrl, {
@@ -258,21 +297,15 @@ async function copyMarkdownPage(root: HTMLElement) {
     }
 
     const markdown = await response.text();
-
-    if (!navigator.clipboard?.writeText) {
-      throw new Error("Clipboard API unavailable in this browser context");
-    }
-
-    await navigator.clipboard.writeText(markdown);
-    setDocsPageActionStatus(root, "Copied");
-    details?.removeAttribute("open");
+    await writeToClipboard(markdown);
+    setDocsPageActionStatus(root, "Copied", "copied");
   } catch (error) {
     console.warn("Unable to copy markdown page", error);
-    setDocsPageActionStatus(root, "Copy failed");
+    setDocsPageActionStatus(root, "Copy failed", "failed");
   }
 
   window.setTimeout(() => {
-    setDocsPageActionStatus(root, "Copy page");
+    setDocsPageActionStatus(root, "Copy page", "idle");
   }, COPY_RESET_MS);
 }
 
