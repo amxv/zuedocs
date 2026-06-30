@@ -547,11 +547,34 @@ p {
 }
 
 .docs-page-actions__copy-icon,
+.docs-page-actions__copy-spinner,
 .docs-page-actions__chevron,
 .docs-page-actions__item-icon {
   display: inline-grid;
   place-items: center;
   flex-shrink: 0;
+}
+
+.docs-page-actions__copy-icon--default {
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.docs-page-actions__copy-spinner {
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: docs-page-actions-spin 700ms linear infinite;
+}
+
+@keyframes docs-page-actions-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .docs-page-actions svg {
@@ -570,14 +593,15 @@ p {
   stroke: none;
 }
 
-.docs-page-actions__copy-icon--success {
+.docs-page-actions__copy-icon--success,
+.docs-page-actions__copy.is-copying .docs-page-actions__copy-icon--default,
+.docs-page-actions__copy.is-copying .docs-page-actions__copy-icon--success,
+.docs-page-actions__copy.is-copied .docs-page-actions__copy-icon--default,
+.docs-page-actions__copy.is-copied .docs-page-actions__copy-spinner {
   display: none;
 }
 
-.docs-page-actions__copy.is-copied .docs-page-actions__copy-icon--default {
-  display: none;
-}
-
+.docs-page-actions__copy.is-copying .docs-page-actions__copy-spinner,
 .docs-page-actions__copy.is-copied .docs-page-actions__copy-icon--success {
   display: inline-grid;
 }

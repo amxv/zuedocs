@@ -283,7 +283,7 @@ function setDocsPageActionStatus(root: HTMLElement, text: string, state: "idle" 
 async function copyMarkdownPage(root: HTMLElement) {
   const markdownUrl = getMarkdownUrl();
 
-  setDocsPageActionStatus(root, "Copying…", "copying");
+  setDocsPageActionStatus(root, "Copy page", "copying");
 
   try {
     const response = await fetch(markdownUrl, {
