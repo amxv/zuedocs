@@ -192,9 +192,144 @@ async function renderMermaidDiagrams(nodes: HTMLElement[]) {
   }
 }
 
+
+function getCleanCurrentUrl() {
+  const url = new URL(window.location.href);
+  url.hash = "";
+  url.search = "";
+  return url;
+}
+
+function getMarkdownUrl() {
+  const url = getCleanCurrentUrl();
+
+  if (url.pathname.endsWith(".md")) {
+    return url.href;
+  }
+
+  if (url.pathname.endsWith("/")) {
+    url.pathname = `${url.pathname.slice(0, -1)}.md`;
+  } else {
+    url.pathname = `${url.pathname}.md`;
+  }
+
+  return url.href;
+}
+
+function getRenderedPageUrl() {
+  const url = getCleanCurrentUrl();
+
+  if (url.pathname.endsWith(".md")) {
+    url.pathname = url.pathname.slice(0, -3);
+  }
+
+  return url.href;
+}
+
+function getAskUrl(base: string, parameter: string, sourceUrl: string) {
+  const url = new URL(base);
+  url.searchParams.set(parameter, `Read from ${sourceUrl} so I can ask questions about it.`);
+  return url.href;
+}
+
+function setDocsPageActionStatus(root: HTMLElement, text: string) {
+  const triggerLabel = root.querySelector<HTMLElement>("[data-docs-page-actions-trigger-label]");
+  const copyLabel = root.querySelector<HTMLElement>("[data-docs-page-copy-label]");
+
+  if (triggerLabel) triggerLabel.textContent = text;
+  if (copyLabel) copyLabel.textContent = text;
+}
+
+async function copyMarkdownPage(root: HTMLElement) {
+  const details = root.querySelector<HTMLDetailsElement>(".docs-page-actions__details");
+  const markdownUrl = getMarkdownUrl();
+
+  setDocsPageActionStatus(root, "Copying…");
+
+  try {
+    const response = await fetch(markdownUrl, {
+      headers: {
+        Accept: "text/markdown,text/plain;q=0.9,*/*;q=0.8"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Markdown source returned ${response.status}`);
+    }
+
+    const markdown = await response.text();
+
+    if (!navigator.clipboard?.writeText) {
+      throw new Error("Clipboard API unavailable in this browser context");
+    }
+
+    await navigator.clipboard.writeText(markdown);
+    setDocsPageActionStatus(root, "Copied");
+    details?.removeAttribute("open");
+  } catch (error) {
+    console.warn("Unable to copy markdown page", error);
+    setDocsPageActionStatus(root, "Copy failed");
+  }
+
+  window.setTimeout(() => {
+    setDocsPageActionStatus(root, "Copy page");
+  }, COPY_RESET_MS);
+}
+
+function enhanceDocsPageActions() {
+  const roots = document.querySelectorAll<HTMLElement>("[data-docs-page-actions]:not([data-docs-enhanced])");
+
+  roots.forEach((root) => {
+    root.dataset.docsEnhanced = "true";
+
+    const details = root.querySelector<HTMLDetailsElement>(".docs-page-actions__details");
+    const copyButton = root.querySelector<HTMLButtonElement>("[data-docs-page-copy]");
+    const markdownLink = root.querySelector<HTMLAnchorElement>("[data-docs-page-markdown]");
+    const chatgptLink = root.querySelector<HTMLAnchorElement>("[data-docs-page-chatgpt]");
+    const claudeLink = root.querySelector<HTMLAnchorElement>("[data-docs-page-claude]");
+    const markdownUrl = getMarkdownUrl();
+    const renderedPageUrl = getRenderedPageUrl();
+
+    if (markdownLink) {
+      markdownLink.href = markdownUrl;
+      markdownLink.target = "_blank";
+      markdownLink.rel = "noreferrer";
+    }
+
+    if (chatgptLink) {
+      chatgptLink.href = getAskUrl("https://" + "chatgpt.com/", "prompt", renderedPageUrl);
+      chatgptLink.target = "_blank";
+      chatgptLink.rel = "noreferrer";
+    }
+
+    if (claudeLink) {
+      claudeLink.href = getAskUrl("https://" + "claude.ai/new", "q", markdownUrl);
+      claudeLink.target = "_blank";
+      claudeLink.rel = "noreferrer";
+    }
+
+    copyButton?.addEventListener("click", () => copyMarkdownPage(root));
+
+    document.addEventListener("click", (event) => {
+      if (!details?.open) return;
+      const target = event.target;
+      if (target instanceof Node && !root.contains(target)) {
+        details.removeAttribute("open");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && details?.open) {
+        details.removeAttribute("open");
+      }
+    });
+  });
+}
+
 async function initDocsEnhancements() {
   const mermaidNodes = enhanceCodeBlocks();
   enhanceTables();
+  enhanceDocsPageActions();
   await renderMermaidDiagrams(mermaidNodes);
 }
 

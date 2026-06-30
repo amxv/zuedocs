@@ -1,4 +1,6 @@
 ---
+import DocsPageActions from "../components/DocsPageActions.astro";
+
 interface Props {
   title: string;
   description: string;
@@ -9,8 +11,13 @@ const { title, description, category } = Astro.props;
 ---
 
 <section class="docs-hero">
-  <p class="section-label">{category}</p>
-  <h1>{title}</h1>
+  <div class="docs-hero__head">
+    <div class="docs-hero__title-block">
+      <p class="section-label">{category}</p>
+      <h1>{title}</h1>
+    </div>
+    <DocsPageActions />
+  </div>
   <p>{description}</p>
 </section>
 <div class="docs-copy">

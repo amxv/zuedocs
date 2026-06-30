@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import DocsPageActions from "../../components/DocsPageActions.astro";
 import { docCategories, primaryNav, siteConfig } from "../../data/docs";
 
 const entries = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
@@ -17,8 +18,13 @@ const grouped = docCategories.map((category) => ({
   primaryNav={primaryNav}
 >
   <section class="shell docs-index-hero">
-    <p class="section-label">Documentation</p>
-    <h1>Use the starter guides as scaffolding, then replace them with your own narrative.</h1>
+    <div class="docs-index-hero__head">
+      <div>
+        <p class="section-label">Documentation</p>
+        <h1>Use the starter guides as scaffolding, then replace them with your own narrative.</h1>
+      </div>
+      <DocsPageActions />
+    </div>
     <p>
       The docs area is intentionally small but opinionated: launch guidance for
       the repo, structural guidance for authors, and operational guidance for
@@ -44,3 +50,8 @@ const grouped = docCategories.map((category) => ({
     ))}
   </section>
 </BaseLayout>
+
+
+<script>
+  import "../../scripts/docsEnhancements";
+</script>

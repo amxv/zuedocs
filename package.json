@@ -49,6 +49,7 @@
     "./layouts/DocsPageLayout.astro": "./src/layouts/DocsPageLayout.astro",
     "./components/SiteHeader.astro": "./src/components/SiteHeader.astro",
     "./components/SiteFooter.astro": "./src/components/SiteFooter.astro",
+    "./components/DocsPageActions.astro": "./src/components/DocsPageActions.astro",
     "./package.json": "./package.json"
   }
 }

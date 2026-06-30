@@ -8,7 +8,7 @@ It gives you a shared presentation layer for:
 - docs index pages
 - docs article pages with sidebar and table of contents
 - shared styles
-- client-side docs enhancements like copy buttons, Mermaid rendering, and responsive table wrappers
+- client-side docs enhancements like copy buttons, page action menus, Mermaid rendering, and responsive table wrappers
 
 The intended model is:
 
@@ -40,6 +40,7 @@ Each consuming repo should keep these pieces in its own codebase:
 - `zuedocs/layouts/DocsPageLayout.astro`
 - `zuedocs/components/SiteHeader.astro`
 - `zuedocs/components/SiteFooter.astro`
+- `zuedocs/components/DocsPageActions.astro`
 - `zuedocs/docsEnhancements`
 - `zuedocs/styles.css`
 - `zuedocs/types`
@@ -200,6 +201,12 @@ Validation:
 bun run check
 bun run build
 ```
+
+## Page action menu
+
+Docs pages include a compact action menu at the top of the page. It can copy the current page from the raw Markdown endpoint, open that `.md` endpoint in a new tab, and open common AI chat tools with a prefilled prompt pointing at the page.
+
+For example, `/docs/quickstart` resolves its raw source as `/docs/quickstart.md`, and `/docs` resolves as `/docs.md`.
 
 ## Raw markdown routes
 
