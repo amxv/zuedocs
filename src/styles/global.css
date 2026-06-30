@@ -29,6 +29,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+main {
+  overflow-x: clip;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -65,7 +69,7 @@ p {
 
 /* Header */
 .site-header {
-  padding: 2rem 0;
+  padding: 1.5rem 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -307,21 +311,22 @@ p {
 }
 
 .docs-index-hero {
-  padding-top: 4.5rem;
-  padding-bottom: 2.5rem;
+  padding-top: clamp(2.75rem, 5vw, 4rem);
+  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
 .docs-index-hero h1 {
-  max-width: 18ch;
+  max-width: min(100%, 18ch);
   margin-top: 0.75rem;
-  font-size: clamp(2.6rem, 4.8vw, 4rem);
-  line-height: 1.02;
+  font-size: clamp(2.25rem, 4.2vw, 3.35rem);
+  line-height: 1.04;
   letter-spacing: -0.035em;
+  overflow-wrap: break-word;
   text-wrap: balance;
 }
 
 .docs-index-hero p:last-child {
-  max-width: 70rem;
+  max-width: min(100%, 52rem);
   margin-top: 1rem;
   font-size: 1.2rem;
   line-height: 1.45;
@@ -394,7 +399,7 @@ p {
   display: grid;
   grid-template-columns: 200px 1fr 200px;
   gap: 3rem;
-  padding: 4rem 0;
+  padding: clamp(2.75rem, 5vw, 4rem) 0;
   align-items: start;
 }
 
@@ -818,8 +823,8 @@ body.has-docs-expanded-diagram {
     display: none;
   }
   .docs-index-hero {
-    padding-top: 3rem;
-    padding-bottom: 2rem;
+    padding-top: 2.5rem;
+    padding-bottom: 1.75rem;
   }
   .docs-index-hero h1 {
     max-width: 12ch;
