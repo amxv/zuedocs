@@ -1260,19 +1260,30 @@ body.has-docs-expanded-diagram {
 
 @media (max-width: 768px) {
   .site-header__inner {
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+  }
+  .brand {
+    display: none;
   }
   .site-header__actions {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    row-gap: 0.75rem;
-  }
-  .site-nav {
-    gap: 1rem;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.75rem;
   }
   .docs-menu-toggle {
+    order: 0;
     display: inline-grid;
+  }
+  .theme-toggle {
+    order: 1;
+  }
+  .site-nav {
+    order: 2;
+    gap: 1rem;
+    margin-left: auto;
   }
   .docs-index-hero__head,
   .docs-hero__head {

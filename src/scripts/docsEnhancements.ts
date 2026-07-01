@@ -361,9 +361,8 @@ function enhanceDocsPageActions() {
 
 
 function enhanceMobileDocsSidebar() {
-  const sidebar = document.querySelector<HTMLElement>("[data-docs-sidebar]");
+  const sidebar = document.querySelector<HTMLElement>("[data-docs-sidebar], .docs-sidebar");
   const toggles = document.querySelectorAll<HTMLButtonElement>("[data-docs-sidebar-toggle]");
-  const closeControls = document.querySelectorAll<HTMLElement>("[data-docs-sidebar-close]");
 
   if (!sidebar) {
     toggles.forEach((toggle) => {
@@ -372,10 +371,26 @@ function enhanceMobileDocsSidebar() {
     return;
   }
 
+  sidebar.dataset.docsSidebar = "true";
+  if (!sidebar.id) {
+    sidebar.id = "docs-sidebar";
+  }
+
+  let backdrop = document.querySelector<HTMLButtonElement>("[data-docs-sidebar-close]");
+  if (!backdrop) {
+    backdrop = document.createElement("button");
+    backdrop.type = "button";
+    backdrop.className = "docs-sidebar-backdrop";
+    backdrop.dataset.docsSidebarClose = "true";
+    backdrop.setAttribute("aria-label", "Close docs menu");
+    sidebar.after(backdrop);
+  }
+
   const setOpen = (open: boolean) => {
     sidebar.classList.toggle("is-open", open);
     document.body.classList.toggle("has-docs-sidebar-open", open);
     toggles.forEach((toggle) => {
+      toggle.setAttribute("aria-controls", sidebar.id);
       toggle.setAttribute("aria-expanded", String(open));
       toggle.setAttribute("aria-label", open ? "Close docs menu" : "Open docs menu");
     });
@@ -387,9 +402,7 @@ function enhanceMobileDocsSidebar() {
     });
   });
 
-  closeControls.forEach((control) => {
-    control.addEventListener("click", () => setOpen(false));
-  });
+  backdrop.addEventListener("click", () => setOpen(false));
 
   sidebar.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
     link.addEventListener("click", () => setOpen(false));
