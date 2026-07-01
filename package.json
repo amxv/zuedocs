@@ -1,6 +1,6 @@
 {
   "name": "zuedocs",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "Reusable Astro docs template, styles, and client-side docs enhancements for amxv projects.",
   "private": false,
   "type": "module",
