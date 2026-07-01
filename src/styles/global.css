@@ -1025,7 +1025,11 @@ body.has-docs-expanded-diagram {
 .docs-mermaid svg .node rect,
 .docs-mermaid svg .node polygon,
 .docs-mermaid svg .node circle,
-.docs-mermaid svg .node ellipse {
+.docs-mermaid svg .node ellipse,
+.docs-mermaid svg .node path,
+.docs-mermaid svg .node .label-container,
+.docs-mermaid svg .node .basic,
+.docs-mermaid svg .node .node-bkg {
   fill: var(--surface) !important;
   stroke: var(--muted) !important;
 }
@@ -1033,7 +1037,11 @@ body.has-docs-expanded-diagram {
 :root[data-theme="dark"] .docs-mermaid svg .node rect,
 :root[data-theme="dark"] .docs-mermaid svg .node polygon,
 :root[data-theme="dark"] .docs-mermaid svg .node circle,
-:root[data-theme="dark"] .docs-mermaid svg .node ellipse {
+:root[data-theme="dark"] .docs-mermaid svg .node ellipse,
+:root[data-theme="dark"] .docs-mermaid svg .node path,
+:root[data-theme="dark"] .docs-mermaid svg .node .label-container,
+:root[data-theme="dark"] .docs-mermaid svg .node .basic,
+:root[data-theme="dark"] .docs-mermaid svg .node .node-bkg {
   fill: var(--surface-subtle) !important;
   stroke: var(--muted) !important;
 }
