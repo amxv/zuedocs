@@ -234,6 +234,47 @@ p {
   display: inline-grid;
 }
 
+.docs-menu-toggle {
+  display: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.docs-menu-toggle:hover,
+.docs-menu-toggle:focus-visible,
+.docs-menu-toggle[aria-expanded="true"] {
+  outline: 0;
+  border-color: var(--ink);
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.docs-menu-toggle svg {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.docs-sidebar-backdrop {
+  display: none;
+}
+
 /* Buttons */
 .button {
   display: inline-flex;
@@ -513,7 +554,7 @@ p {
 /* Documentation Pages */
 .docs-shell {
   display: grid;
-  grid-template-columns: 200px 1fr 200px;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) minmax(0, 200px);
   gap: 3rem;
   padding: clamp(2.75rem, 5vw, 4rem) 0;
   align-items: start;
@@ -560,6 +601,8 @@ p {
 }
 
 .docs-article {
+  width: 100%;
+  min-width: 0;
   max-width: 48rem;
 }
 
@@ -813,6 +856,10 @@ p {
   line-height: 1.35;
 }
 
+.docs-copy {
+  min-width: 0;
+}
+
 .docs-copy h2,
 .docs-copy h3 {
   margin-top: 3rem;
@@ -834,6 +881,7 @@ p {
   margin-bottom: 1rem;
   color: var(--ink);
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .docs-copy code,
@@ -846,6 +894,7 @@ p {
   background: var(--surface-hover);
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
+  overflow-wrap: anywhere;
 }
 
 .docs-copy pre {
@@ -858,6 +907,7 @@ p {
 }
 
 .docs-codeblock {
+  max-width: 100%;
   margin: 1.5rem 0;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1201,7 +1251,7 @@ body.has-docs-expanded-diagram {
     gap: 3rem;
   }
   .docs-shell {
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
   }
   .docs-toc {
     display: none;
@@ -1221,6 +1271,9 @@ body.has-docs-expanded-diagram {
   .site-nav {
     gap: 1rem;
   }
+  .docs-menu-toggle {
+    display: inline-grid;
+  }
   .docs-index-hero__head,
   .docs-hero__head {
     flex-direction: column;
@@ -1228,7 +1281,9 @@ body.has-docs-expanded-diagram {
   }
   .docs-page-actions {
     width: fit-content;
+    max-width: 100%;
     margin-top: 0;
+    margin-bottom: 0.9rem;
   }
   .docs-page-actions__menu {
     right: auto;
@@ -1247,10 +1302,63 @@ body.has-docs-expanded-diagram {
     gap: 2rem;
   }
   .docs-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow-x: clip;
+  }
+  .docs-article {
+    max-width: none;
+  }
+  .docs-hero {
+    padding-bottom: 2rem;
+  }
+  .docs-hero h1 {
+    font-size: clamp(2.25rem, 12vw, 4rem);
+    overflow-wrap: anywhere;
+  }
+  .docs-hero p {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .docs-hero__head {
+    gap: 1.25rem;
+    margin-bottom: 0.35rem;
   }
   .docs-sidebar {
-    display: none;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1001;
+    display: block;
+    width: min(20rem, calc(100vw - 3rem));
+    max-width: 100%;
+    padding: 1.25rem;
+    overflow-y: auto;
+    border-right: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: var(--menu-shadow);
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+  }
+  .docs-sidebar.is-open {
+    transform: translateX(0);
+  }
+  .docs-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: block;
+    border: 0;
+    background: rgba(0, 0, 0, 0.34);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+  body.has-docs-sidebar-open {
+    overflow: hidden;
+  }
+  body.has-docs-sidebar-open .docs-sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
   }
   .docs-index-hero {
     padding-top: 2.5rem;

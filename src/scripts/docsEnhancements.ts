@@ -359,10 +359,54 @@ function enhanceDocsPageActions() {
   });
 }
 
+
+function enhanceMobileDocsSidebar() {
+  const sidebar = document.querySelector<HTMLElement>("[data-docs-sidebar]");
+  const toggles = document.querySelectorAll<HTMLButtonElement>("[data-docs-sidebar-toggle]");
+  const closeControls = document.querySelectorAll<HTMLElement>("[data-docs-sidebar-close]");
+
+  if (!sidebar) {
+    toggles.forEach((toggle) => {
+      toggle.hidden = true;
+    });
+    return;
+  }
+
+  const setOpen = (open: boolean) => {
+    sidebar.classList.toggle("is-open", open);
+    document.body.classList.toggle("has-docs-sidebar-open", open);
+    toggles.forEach((toggle) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close docs menu" : "Open docs menu");
+    });
+  };
+
+  toggles.forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      setOpen(!sidebar.classList.contains("is-open"));
+    });
+  });
+
+  closeControls.forEach((control) => {
+    control.addEventListener("click", () => setOpen(false));
+  });
+
+  sidebar.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && sidebar.classList.contains("is-open")) {
+      setOpen(false);
+    }
+  });
+}
+
 async function initDocsEnhancements() {
   const mermaidNodes = enhanceCodeBlocks();
   enhanceTables();
   enhanceDocsPageActions();
+  enhanceMobileDocsSidebar();
   await renderMermaidDiagrams(mermaidNodes);
 }
 

@@ -32,7 +32,7 @@ const grouped = docCategories
   primaryNav={primaryNav}
 >
   <section class="shell docs-shell">
-    <aside class="docs-sidebar">
+    <aside class="docs-sidebar" id="docs-sidebar" data-docs-sidebar aria-label="Docs menu">
       <p class="docs-sidebar__eyebrow">Docs map</p>
       {grouped.map((group) => (
         <div class="docs-sidebar__group">
@@ -52,6 +52,7 @@ const grouped = docCategories
         </div>
       ))}
     </aside>
+    <button class="docs-sidebar-backdrop" type="button" data-docs-sidebar-close aria-label="Close docs menu"></button>
 
     <article class="docs-article">
       <DocsPageLayout
