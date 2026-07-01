@@ -521,6 +521,7 @@ p {
 .docs-teaser__card:hover,
 .docs-index__card:hover {
   background: var(--surface-muted);
+  text-decoration: none;
 }
 
 .docs-teaser__card span,
