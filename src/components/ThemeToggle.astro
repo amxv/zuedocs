@@ -1,0 +1,101 @@
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Theme: System" title="Theme: System">
+  <span class="theme-toggle__icon theme-toggle__icon--system" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <rect x="4" y="5" width="16" height="11" rx="2" />
+      <path d="M9 20h6" />
+      <path d="M12 16v4" />
+    </svg>
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.75v2" />
+      <path d="M12 19.25v2" />
+      <path d="M4.42 4.42l1.41 1.41" />
+      <path d="M18.17 18.17l1.41 1.41" />
+      <path d="M2.75 12h2" />
+      <path d="M19.25 12h2" />
+      <path d="M4.42 19.58l1.41-1.41" />
+      <path d="M18.17 5.83l1.41-1.41" />
+    </svg>
+  </span>
+  <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">
+    <svg viewBox="0 0 24 24" focusable="false">
+      <path d="M20.25 14.15A7.6 7.6 0 0 1 9.85 3.75 8.3 8.3 0 1 0 20.25 14.15Z" />
+    </svg>
+  </span>
+  <span class="theme-toggle__label" data-theme-toggle-label>System</span>
+</button>
+
+<script>
+  const THEME_STORAGE_KEY = "zuedocs-theme-mode";
+  const THEME_MODES = ["system", "light", "dark"] as const;
+  type ThemeMode = (typeof THEME_MODES)[number];
+
+  const modeLabels: Record<ThemeMode, string> = {
+    system: "System",
+    light: "Light",
+    dark: "Dark"
+  };
+
+  function isThemeMode(value: string | null): value is ThemeMode {
+    return value === "system" || value === "light" || value === "dark";
+  }
+
+  function getStoredThemeMode(): ThemeMode {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return isThemeMode(stored) ? stored : "system";
+  }
+
+  function getResolvedTheme(mode: ThemeMode) {
+    if (mode !== "system") return mode;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function updateThemeToggle(button: HTMLButtonElement, mode: ThemeMode) {
+    const label = button.querySelector<HTMLElement>("[data-theme-toggle-label]");
+    const text = modeLabels[mode];
+
+    button.dataset.themeMode = mode;
+    button.setAttribute("aria-label", `Theme: ${text}`);
+    button.title = `Theme: ${text}`;
+    if (label) label.textContent = text;
+  }
+
+  function applyThemeMode(mode: ThemeMode) {
+    const resolvedTheme = getResolvedTheme(mode);
+    document.documentElement.dataset.themeMode = mode;
+    document.documentElement.dataset.theme = resolvedTheme;
+    document.documentElement.style.colorScheme = resolvedTheme;
+
+    document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((button) => {
+      updateThemeToggle(button, mode);
+    });
+  }
+
+  function nextThemeMode(mode: ThemeMode): ThemeMode {
+    const index = THEME_MODES.indexOf(mode);
+    return THEME_MODES[(index + 1) % THEME_MODES.length];
+  }
+
+  function initThemeToggle() {
+    applyThemeMode(getStoredThemeMode());
+
+    document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]:not([data-theme-toggle-ready])").forEach((button) => {
+      button.dataset.themeToggleReady = "true";
+      button.addEventListener("click", () => {
+        const mode = nextThemeMode(getStoredThemeMode());
+        window.localStorage.setItem(THEME_STORAGE_KEY, mode);
+        applyThemeMode(mode);
+      });
+    });
+  }
+
+  initThemeToggle();
+
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (getStoredThemeMode() === "system") {
+      applyThemeMode("system");
+    }
+  });
+</script>

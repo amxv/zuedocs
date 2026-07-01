@@ -3,6 +3,7 @@ export interface SiteConfig {
   strapline: string;
   description: string;
   repoUrl: string;
+  themeToggle?: boolean;
   footerSections?: readonly FooterSection[];
 }
 

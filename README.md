@@ -39,6 +39,7 @@ Each consuming repo should keep these pieces in its own codebase:
 - `zuedocs/layouts/BaseLayout.astro`
 - `zuedocs/layouts/DocsPageLayout.astro`
 - `zuedocs/components/SiteHeader.astro`
+- `zuedocs/components/ThemeToggle.astro`
 - `zuedocs/components/SiteFooter.astro`
 - `zuedocs/components/DocsPageActions.astro`
 - `zuedocs/docsEnhancements`
@@ -207,6 +208,10 @@ bun run build
 Docs pages include a compact action menu at the top of the page. It can copy the current page from the raw Markdown endpoint, open that `.md` endpoint in a new tab, and open common AI chat tools with a prefilled prompt pointing at the page.
 
 For example, `/docs/quickstart` resolves its raw source as `/docs/quickstart.md`, and `/docs` resolves as `/docs.md`.
+
+## Theme toggle
+
+`SiteHeader.astro` includes a small theme toggle after the primary navigation. It cycles between `system`, `light`, and `dark`, stores the selection in local storage, and applies the resolved theme before paint from `BaseLayout.astro` to avoid a light/dark flash. The toggle is enabled by default and can be disabled with `themeToggle: false` in `siteConfig`.
 
 ## Raw markdown routes
 

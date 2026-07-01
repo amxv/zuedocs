@@ -48,6 +48,7 @@
     "./layouts/BaseLayout.astro": "./src/layouts/BaseLayout.astro",
     "./layouts/DocsPageLayout.astro": "./src/layouts/DocsPageLayout.astro",
     "./components/SiteHeader.astro": "./src/components/SiteHeader.astro",
+    "./components/ThemeToggle.astro": "./src/components/ThemeToggle.astro",
     "./components/SiteFooter.astro": "./src/components/SiteFooter.astro",
     "./components/DocsPageActions.astro": "./src/components/DocsPageActions.astro",
     "./package.json": "./package.json"

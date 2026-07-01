@@ -1,13 +1,66 @@
-:root {
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+  }
+}
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
   --bg: #ffffff;
   --surface: #ffffff;
+  --surface-muted: #f9f9f9;
+  --surface-subtle: #f7f7f7;
+  --surface-hover: #f5f5f5;
+  --surface-strong: #fafafa;
   --ink: #111111;
   --muted: #666666;
   --line: #e5e5e5;
   --accent: #000000;
   --signal: #000000;
+  --menu-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
+  --code-bg: #111111;
+  --code-header-bg: #151515;
+  --code-ink: #ffffff;
+  --code-muted: rgba(255, 255, 255, 0.68);
+  --code-line: rgba(255, 255, 255, 0.14);
+  --code-button-bg: rgba(255, 255, 255, 0.08);
+  --code-button-hover: rgba(255, 255, 255, 0.14);
+  --code-button-line: rgba(255, 255, 255, 0.18);
+  --code-button-line-hover: rgba(255, 255, 255, 0.32);
+  --code-button-ink: rgba(255, 255, 255, 0.82);
+  --code-button-strong: #ffffff;
+  --diagram-bg: #ffffff;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f0f0f;
+  --surface: #141414;
+  --surface-muted: #171717;
+  --surface-subtle: #1c1c1c;
+  --surface-hover: #222222;
+  --surface-strong: #181818;
+  --ink: #f5f5f5;
+  --muted: #a3a3a3;
+  --line: #2c2c2c;
+  --accent: #ffffff;
+  --signal: #ffffff;
+  --menu-shadow: 0 18px 60px rgba(0, 0, 0, 0.42);
+  --code-bg: #090909;
+  --code-header-bg: #111111;
+  --code-ink: #f5f5f5;
+  --code-muted: rgba(255, 255, 255, 0.66);
+  --code-line: rgba(255, 255, 255, 0.12);
+  --code-button-bg: rgba(255, 255, 255, 0.06);
+  --code-button-hover: rgba(255, 255, 255, 0.12);
+  --code-button-line: rgba(255, 255, 255, 0.16);
+  --code-button-line-hover: rgba(255, 255, 255, 0.3);
+  --code-button-ink: rgba(255, 255, 255, 0.78);
+  --code-button-strong: #ffffff;
+  --diagram-bg: #141414;
 }
 
 * {
@@ -118,6 +171,64 @@ p {
   color: var(--ink);
 }
 
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  outline: 0;
+  border-color: var(--ink);
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.theme-toggle__icon {
+  display: none;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.theme-toggle__icon svg {
+  display: block;
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.theme-toggle[data-theme-mode="system"] .theme-toggle__icon--system,
+.theme-toggle[data-theme-mode="light"] .theme-toggle__icon--light,
+.theme-toggle[data-theme-mode="dark"] .theme-toggle__icon--dark {
+  display: inline-grid;
+}
+
 /* Buttons */
 .button {
   display: inline-flex;
@@ -145,7 +256,7 @@ p {
 }
 
 .button--ghost:hover {
-  background: #f5f5f5;
+  background: var(--surface-hover);
 }
 
 /* Sections */
@@ -179,7 +290,7 @@ p {
 
 .hero__panel {
   padding: 2.5rem;
-  background: #f9f9f9;
+  background: var(--surface-muted);
   border: 1px solid var(--line);
   border-radius: 4px;
 }
@@ -277,7 +388,7 @@ p {
 .stack-list__item {
   padding: 1.5rem;
   border-left: 2px solid var(--ink);
-  background: #f9f9f9;
+  background: var(--surface-muted);
 }
 
 .stack-list__item p {
@@ -363,7 +474,7 @@ p {
 
 .docs-teaser__card:hover,
 .docs-index__card:hover {
-  background: #f9f9f9;
+  background: var(--surface-muted);
 }
 
 .docs-teaser__card span,
@@ -488,7 +599,7 @@ p {
   margin-top: 0.25rem;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .docs-page-actions__copy,
@@ -533,7 +644,7 @@ p {
 .docs-page-actions__toggle:focus-visible,
 .docs-page-actions__details[open] .docs-page-actions__toggle {
   outline: 0;
-  background: #f5f5f5;
+  background: var(--surface-hover);
 }
 
 .docs-page-actions__copy.is-copied {
@@ -629,9 +740,9 @@ p {
   padding: 0.35rem;
   border: 1px solid var(--line);
   border-radius: 0.85rem;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--menu-shadow);
 }
 
 .docs-page-actions__item {
@@ -649,7 +760,7 @@ p {
 .docs-page-actions__item:hover,
 .docs-page-actions__item:focus-visible {
   outline: 0;
-  background: #f6f6f6;
+  background: var(--surface-hover);
   text-decoration: none;
 }
 
@@ -658,7 +769,7 @@ p {
   height: 1.75rem;
   border: 1px solid var(--line);
   border-radius: 0.5rem;
-  background: #fafafa;
+  background: var(--surface-strong);
   color: var(--muted);
 }
 
@@ -727,14 +838,14 @@ p {
 }
 
 .docs-copy code {
-  background: #f5f5f5;
+  background: var(--surface-hover);
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
 }
 
 .docs-copy pre {
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--code-bg);
+  color: var(--code-ink);
   padding: 1.5rem;
   overflow-x: auto;
   border-radius: 4px;
@@ -746,7 +857,7 @@ p {
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
-  background: var(--ink);
+  background: var(--code-bg);
 }
 
 .docs-copy .docs-codeblock pre {
@@ -761,12 +872,12 @@ p {
   justify-content: space-between;
   gap: 1rem;
   padding: 0.625rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  background: #151515;
+  border-bottom: 1px solid var(--code-line);
+  background: var(--code-header-bg);
 }
 
 .docs-codeblock__language {
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--code-muted);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
@@ -786,10 +897,10 @@ p {
   place-items: center;
   width: 2rem;
   height: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--code-button-line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.82);
+  background: var(--code-button-bg);
+  color: var(--code-button-ink);
   cursor: pointer;
   font: inherit;
   font-size: 1rem;
@@ -805,19 +916,19 @@ p {
 
 .docs-codeblock__copy:hover,
 .docs-codeblock__copy:focus-visible {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.32);
-  color: #fff;
+  background: var(--code-button-hover);
+  border-color: var(--code-button-line-hover);
+  color: var(--code-button-strong);
 }
 
 .docs-codeblock__copy.is-copied {
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
 }
 
 .docs-codeblock__copy.is-failed {
   background: transparent;
-  border-color: rgba(255, 255, 255, 0.42);
+  border-color: var(--code-button-line-hover);
 }
 
 .docs-codeblock__fullscreen {
@@ -829,7 +940,7 @@ body.has-docs-expanded-diagram {
 }
 
 .docs-codeblock--diagram {
-  background: #fff;
+  background: var(--diagram-bg);
 }
 
 .docs-codeblock--diagram.is-expanded {
@@ -842,12 +953,12 @@ body.has-docs-expanded-diagram {
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  background: #fff;
+  background: var(--diagram-bg);
 }
 
 .docs-codeblock--diagram .docs-codeblock__header {
   border-bottom: 1px solid var(--line);
-  background: #f8f8f8;
+  background: var(--surface-subtle);
 }
 
 .docs-codeblock--diagram .docs-codeblock__language {
@@ -856,7 +967,7 @@ body.has-docs-expanded-diagram {
 
 .docs-codeblock--diagram .docs-codeblock__copy {
   border-color: var(--line);
-  background: #fff;
+  background: var(--surface);
   color: var(--muted);
 }
 
@@ -864,8 +975,8 @@ body.has-docs-expanded-diagram {
 .docs-codeblock--diagram .docs-codeblock__copy:focus-visible,
 .docs-codeblock--diagram .docs-codeblock__copy.is-copied {
   border-color: var(--ink);
-  background: var(--ink);
-  color: #fff;
+  background: var(--code-bg);
+  color: var(--code-button-strong);
 }
 
 .docs-codeblock--diagram.is-expanded .docs-codeblock__header {
@@ -913,7 +1024,7 @@ body.has-docs-expanded-diagram {
   margin: 2rem 0;
   padding: 1rem 1.5rem;
   border-left: 2px solid var(--ink);
-  background: #f9f9f9;
+  background: var(--surface-muted);
 }
 
 .docs-table {
@@ -921,7 +1032,7 @@ body.has-docs-expanded-diagram {
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .docs-table:focus-visible {
@@ -939,7 +1050,7 @@ body.has-docs-expanded-diagram {
 }
 
 .docs-copy thead th {
-  background: #f7f7f7;
+  background: var(--surface-subtle);
   color: var(--ink);
   font-weight: 600;
 }
@@ -963,7 +1074,7 @@ body.has-docs-expanded-diagram {
 }
 
 .docs-copy tbody tr:nth-child(even) {
-  background: #fbfbfb;
+  background: var(--surface-muted);
 }
 
 .docs-copy td p,
@@ -1035,6 +1146,25 @@ body.has-docs-expanded-diagram {
 }
 
 @media (max-width: 768px) {
+  .site-header__inner {
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .site-header__actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    row-gap: 0.75rem;
+  }
+  .site-nav {
+    gap: 1rem;
+  }
+  .theme-toggle__label {
+    display: none;
+  }
+  .theme-toggle {
+    width: 2rem;
+    padding-inline: 0;
+  }
   .docs-index-hero__head,
   .docs-hero__head {
     flex-direction: column;
