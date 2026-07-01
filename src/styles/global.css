@@ -31,6 +31,8 @@
   --code-button-ink: rgba(255, 255, 255, 0.82);
   --code-button-strong: #ffffff;
   --diagram-bg: #ffffff;
+  --terminal-bg: var(--ink);
+  --terminal-ink: var(--bg);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
@@ -61,6 +63,8 @@
   --code-button-ink: rgba(255, 255, 255, 0.78);
   --code-button-strong: #ffffff;
   --diagram-bg: #141414;
+  --terminal-bg: #202020;
+  --terminal-ink: #f3f3f3;
 }
 
 * {
@@ -180,9 +184,9 @@ p {
 .theme-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  min-height: 2rem;
-  padding: 0.35rem 0.6rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
@@ -308,8 +312,8 @@ p {
 
 .hero__terminal {
   padding: 1.5rem;
-  background: var(--ink);
-  color: var(--bg);
+  background: var(--terminal-bg);
+  color: var(--terminal-ink);
   font-family: var(--font-mono);
   font-size: 0.85rem;
   border-radius: 4px;
@@ -1001,6 +1005,56 @@ body.has-docs-expanded-diagram {
 .docs-mermaid svg {
   height: auto;
   max-width: 100%;
+  color: var(--ink);
+}
+
+.docs-mermaid svg text,
+.docs-mermaid svg .label,
+.docs-mermaid svg .nodeLabel,
+.docs-mermaid svg .edgeLabel,
+.docs-mermaid svg .cluster-label,
+.docs-mermaid svg foreignObject,
+.docs-mermaid svg foreignObject div,
+.docs-mermaid svg foreignObject span,
+.docs-mermaid svg foreignObject p {
+  color: var(--ink) !important;
+  fill: var(--ink) !important;
+}
+
+.docs-mermaid svg .node rect,
+.docs-mermaid svg .node polygon,
+.docs-mermaid svg .node circle,
+.docs-mermaid svg .node ellipse {
+  fill: var(--surface) !important;
+  stroke: var(--muted) !important;
+}
+
+:root[data-theme="dark"] .docs-mermaid svg .node rect,
+:root[data-theme="dark"] .docs-mermaid svg .node polygon,
+:root[data-theme="dark"] .docs-mermaid svg .node circle,
+:root[data-theme="dark"] .docs-mermaid svg .node ellipse {
+  fill: var(--surface-subtle) !important;
+  stroke: var(--muted) !important;
+}
+
+.docs-mermaid svg .edgePath .path,
+.docs-mermaid svg .flowchart-link,
+.docs-mermaid svg line,
+.docs-mermaid svg path.relation {
+  stroke: var(--muted) !important;
+}
+
+.docs-mermaid svg marker path,
+.docs-mermaid svg .marker {
+  fill: var(--muted) !important;
+  stroke: var(--muted) !important;
+}
+
+.docs-mermaid svg .edgeLabel,
+.docs-mermaid svg .edgeLabel .labelBkg,
+.docs-mermaid svg .labelBkg {
+  background: var(--diagram-bg) !important;
+  fill: var(--diagram-bg) !important;
 }
 
 .docs-codeblock--diagram.is-expanded .docs-mermaid svg {
@@ -1157,13 +1211,6 @@ body.has-docs-expanded-diagram {
   }
   .site-nav {
     gap: 1rem;
-  }
-  .theme-toggle__label {
-    display: none;
-  }
-  .theme-toggle {
-    width: 2rem;
-    padding-inline: 0;
   }
   .docs-index-hero__head,
   .docs-hero__head {
