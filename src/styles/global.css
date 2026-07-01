@@ -184,6 +184,7 @@ p {
 .theme-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   width: 2rem;
   height: 2rem;
   padding: 0;
