@@ -34,6 +34,7 @@ jobs:
 
       - name: Validate package
         run: |
+          bun run test
           bun run check
           bun run build
           npm pack --dry-run

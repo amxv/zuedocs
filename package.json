@@ -22,9 +22,12 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "bun test"
   },
   "dependencies": {
+    "@pagefind/component-ui": "^1.5.2",
+    "pagefind": "^1.5.2",
     "mermaid": "^11.16.0"
   },
   "devDependencies": {
@@ -42,6 +45,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./astro": "./src/integrations/astro.ts",
     "./types": "./src/types.ts",
     "./styles.css": "./src/styles/global.css",
     "./docsEnhancements": "./src/scripts/docsEnhancements.ts",
