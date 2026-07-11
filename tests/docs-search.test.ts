@@ -1,9 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { Window } from "happy-dom";
 
 import {
   DOCS_SEARCH_RESULT_TEMPLATE,
+  installDocsSearchShortcut,
   isDocsSearchShortcut
 } from "../src/scripts/docsSearch.ts";
 
@@ -33,6 +35,78 @@ describe("DocsSearch", () => {
     expect(source).toContain("installDocsSearchShortcut(document)");
     expect(source).not.toContain("stopImmediatePropagation");
     expect(source).not.toContain('addEventListener("keydown", onKeydown, true)');
+  });
+
+  test("lets editable targets handle the shortcut without opening search", () => {
+    const window = new Window();
+    const document = window.document;
+    const previousElement = globalThis.Element;
+    Object.defineProperty(globalThis, "Element", { configurable: true, value: window.Element });
+
+    try {
+      let modalOpened = false;
+      const searchRoot = document.createElement("div");
+      searchRoot.dataset.docsSearch = "";
+      const trigger = document.createElement("button");
+      trigger.className = "pf-trigger-btn";
+      trigger.addEventListener("click", () => {
+        modalOpened = true;
+      });
+      searchRoot.append(trigger);
+      document.body.append(searchRoot);
+
+      const removeShortcut = installDocsSearchShortcut(document as unknown as Document);
+      const fixtures = [
+        ["input", document.createElement("input")],
+        ["textarea", document.createElement("textarea")],
+        ["select", document.createElement("select")],
+        ["nested contenteditable", (() => {
+          const editable = document.createElement("div");
+          editable.setAttribute("contenteditable", "true");
+          editable.append(document.createElement("span"));
+          return editable;
+        })()]
+      ] as const;
+
+      for (const [name, fixture] of fixtures) {
+        const target = name === "nested contenteditable" ? fixture.firstElementChild! : fixture;
+        let targetEvents = 0;
+        target.addEventListener("keydown", () => {
+          targetEvents += 1;
+        });
+        document.body.append(fixture);
+
+        const event = new window.KeyboardEvent("keydown", {
+          key: "k",
+          ctrlKey: true,
+          bubbles: true,
+          cancelable: true
+        });
+        target.dispatchEvent(event);
+
+        expect(targetEvents, name).toBe(1);
+        expect(modalOpened, name).toBe(false);
+        expect(event.defaultPrevented, name).toBe(false);
+        fixture.remove();
+      }
+
+      const ordinaryTarget = document.createElement("div");
+      document.body.append(ordinaryTarget);
+      const ordinaryEvent = new window.KeyboardEvent("keydown", {
+        key: "k",
+        ctrlKey: true,
+        bubbles: true,
+        cancelable: true
+      });
+      ordinaryTarget.dispatchEvent(ordinaryEvent);
+      expect(modalOpened).toBe(true);
+      expect(ordinaryEvent.defaultPrevented).toBe(true);
+
+      removeShortcut();
+    } finally {
+      Object.defineProperty(globalThis, "Element", { configurable: true, value: previousElement });
+      window.close();
+    }
   });
 
   test("uses a wrapping, independently scrollable mobile navigation row", async () => {
