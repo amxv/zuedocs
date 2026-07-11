@@ -421,13 +421,13 @@ p {
   align-items: baseline;
   gap: 0.25rem 0.55rem;
   margin-top: 0.25rem;
-  color: var(--muted);
+  color: var(--pf-text-secondary) !important;
   font-size: 0.78rem;
   line-height: 1.45;
 }
 
 .docs-search .pf-result-category {
-  color: var(--ink);
+  color: var(--pf-text) !important;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;

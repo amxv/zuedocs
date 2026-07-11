@@ -37,6 +37,12 @@ describe("DocsSearch", () => {
     expect(source).not.toContain('addEventListener("keydown", onKeydown, true)');
   });
 
+  test("restores themed colors after Pagefind resets custom result metadata", async () => {
+    const styles = await readFile(resolve(packageRoot, "src/styles/global.css"), "utf8");
+    expect(styles).toMatch(/\.docs-search \.pf-result-context \{[\s\S]*?color: var\(--pf-text-secondary\) !important;/);
+    expect(styles).toMatch(/\.docs-search \.pf-result-category \{[\s\S]*?color: var\(--pf-text\) !important;/);
+  });
+
   test("lets editable targets handle the shortcut without opening search", () => {
     const window = new Window();
     const document = window.document;
