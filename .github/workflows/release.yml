@@ -21,6 +21,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
+
+      - name: Synchronize main
+        run: |
+          git fetch origin main --tags
+          git pull --ff-only origin main
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -49,37 +55,16 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Choose next unpublished patch version
-        run: |
-          PACKAGE_NAME="$(node -p "require('./package.json').name")"
-          PUBLISHED_VERSION="$(npm view "$PACKAGE_NAME" version)"
-          npm version "$PUBLISHED_VERSION" --no-git-tag-version --allow-same-version
-          npm version patch --no-git-tag-version
-          VERSION="$(node -p "require('./package.json').version")"
-          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+      - name: Reserve release in Git
+        run: bash .github/scripts/reserve-release.sh
 
-      - name: Commit release version
+      - name: Publish tagged package to npm
+        if: env.RELEASE_SHOULD_PUBLISH == 'true'
         run: |
-          git add package.json
-          git commit -m "chore: release v${RELEASE_VERSION} [skip ci] [skip release]"
-          git tag "v${RELEASE_VERSION}"
-
-      - name: Publish to npm
-        run: npm publish --access public
+          git checkout --detach "$RELEASE_TAG"
+          test "$(git rev-parse HEAD)" = "$RELEASE_COMMIT"
+          test "$(node -p "require('./package.json').version")" = "$RELEASE_VERSION"
+          git diff --exit-code
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Push release commit and tag
-        run: |
-          git push origin "v${RELEASE_VERSION}"
-
-          for attempt in 1 2 3; do
-            git pull --rebase origin main
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            echo "Main advanced during release push (attempt ${attempt}/3); retrying."
-          done
-
-          echo "Unable to persist the release version on main after 3 attempts."
-          exit 1
