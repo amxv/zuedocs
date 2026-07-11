@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -57,6 +58,43 @@ function describeError(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+async function readSearchablePageCount(outputPath: string): Promise<number> {
+  const metadataPath = join(outputPath, "pagefind-entry.json");
+  let metadata: unknown;
+
+  try {
+    metadata = JSON.parse(await readFile(metadataPath, "utf8"));
+  } catch (error) {
+    throw new Error(`could not read ${metadataPath}: ${describeError(error)}`);
+  }
+
+  if (!isRecord(metadata) || !isRecord(metadata.languages)) {
+    throw new Error(`${metadataPath} has no valid languages object`);
+  }
+
+  let pageCount = 0;
+  for (const [language, languageMetadata] of Object.entries(metadata.languages)) {
+    if (
+      !isRecord(languageMetadata) ||
+      typeof languageMetadata.page_count !== "number" ||
+      !Number.isSafeInteger(languageMetadata.page_count) ||
+      languageMetadata.page_count < 0
+    ) {
+      throw new Error(`${metadataPath} has an invalid page_count for language ${JSON.stringify(language)}`);
+    }
+    pageCount += languageMetadata.page_count;
+    if (!Number.isSafeInteger(pageCount)) {
+      throw new Error(`${metadataPath} has an invalid total page_count`);
+    }
+  }
+
+  return pageCount;
+}
+
 export async function indexPagefindSite({
   dir,
   logger,
@@ -90,8 +128,18 @@ export async function indexPagefindSite({
       reportAndThrow(logger, "bundle write", written.errors);
     }
 
-    logger.info(`[zuedocs] Indexed ${added.page_count} page${added.page_count === 1 ? "" : "s"} to ${outputPath}`);
-    return { outputPath, pageCount: added.page_count };
+    let pageCount: number;
+    try {
+      pageCount = await readSearchablePageCount(outputPath);
+    } catch (error) {
+      reportAndThrow(logger, "bundle metadata", [describeError(error)]);
+    }
+    if (pageCount === 0) {
+      reportAndThrow(logger, "HTML indexing", ["zero searchable documentation pages were emitted"]);
+    }
+
+    logger.info(`[zuedocs] Indexed ${pageCount} page${pageCount === 1 ? "" : "s"} to ${outputPath}`);
+    return { outputPath, pageCount };
   } catch (error) {
     operationError = error;
     if (error instanceof Error && error.message.startsWith("[zuedocs]")) {

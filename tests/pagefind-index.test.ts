@@ -62,12 +62,18 @@ function fakeApi({
   createErrors = [],
   addErrors = [],
   pageCount = 1,
-  writeErrors = []
+  writeErrors = [],
+  entryMetadata = { languages: { en: { page_count: 1 } } },
+  entryMetadataContents,
+  writeEntryMetadata = true
 }: {
   createErrors?: string[];
   addErrors?: string[];
   pageCount?: number;
   writeErrors?: string[];
+  entryMetadata?: unknown;
+  entryMetadataContents?: string;
+  writeEntryMetadata?: boolean;
 } = {}) {
   let deleted = false;
   let closed = false;
@@ -77,6 +83,13 @@ function fakeApi({
       return { errors: addErrors, page_count: pageCount };
     },
     async writeFiles({ outputPath }: { outputPath: string }) {
+      if (writeErrors.length === 0 && writeEntryMetadata) {
+        await mkdir(outputPath, { recursive: true });
+        await writeFile(
+          join(outputPath, "pagefind-entry.json"),
+          entryMetadataContents ?? JSON.stringify(entryMetadata)
+        );
+      }
       return { errors: writeErrors, outputPath };
     },
     async deleteIndex() {
@@ -125,13 +138,20 @@ describe("indexPagefindSite", () => {
       </html>`);
     await writeFile(join(output, "index.html"), `<!doctype html>
       <html lang="en"><body><main><h1>Home</h1><p>marketingonlyuniqueterm</p></main></body></html>`);
+    await writeFile(join(output, "docs", "index.html"), `<!doctype html>
+      <html lang="en"><body><main><h1>Docs home</h1><p>docslandingonlyuniqueterm</p></main></body></html>`);
     await writeFile(join(output, "docs", "source.md"), "markdownonlyuniqueterm");
 
-    const result = await indexPagefindSite({ dir: pathToFileURL(`${output}/`), logger });
+    const infoMessages: string[] = [];
+    const result = await indexPagefindSite({
+      dir: pathToFileURL(`${output}/`),
+      logger: { ...logger, info: (message) => infoMessages.push(message) }
+    });
     const bundleFiles = await allFiles(result.outputPath);
     const relativeFiles = bundleFiles.map((path) => path.slice(result.outputPath.length + 1));
 
     expect(result).toEqual({ outputPath: join(output, "pagefind"), pageCount: 1 });
+    expect(infoMessages).toEqual([`[zuedocs] Indexed 1 page to ${join(output, "pagefind")}`]);
     expect(relativeFiles).toContain("pagefind.js");
     expect(relativeFiles).toContain("pagefind-entry.json");
     expect(relativeFiles.some((path) => /^wasm\..+\.pagefind$/.test(path))).toBe(true);
@@ -150,6 +170,7 @@ describe("indexPagefindSite", () => {
     expect(indexedText).not.toContain("footeronlyuniqueterm");
     expect(indexedText).not.toContain("pageactiononlyuniqueterm");
     expect(indexedText).not.toContain("marketingonlyuniqueterm");
+    expect(indexedText).not.toContain("docslandingonlyuniqueterm");
     expect(indexedText).not.toContain("markdownonlyuniqueterm");
 
     const articleResults = await queryIndex(result.outputPath, "articleonlyuniqueterm");
@@ -176,6 +197,7 @@ describe("indexPagefindSite", () => {
       "footeronlyuniqueterm",
       "pageactiononlyuniqueterm",
       "marketingonlyuniqueterm",
+      "docslandingonlyuniqueterm",
       "markdownonlyuniqueterm"
     ]) {
       expect(await queryIndex(result.outputPath, excludedTerm)).toEqual([]);
@@ -188,6 +210,23 @@ describe("indexPagefindSite", () => {
         !entry.url.includes("file:") &&
         !entry.url.includes(output);
     })).toBe(true);
+  });
+
+  test("fails when Pagefind scans docs HTML but emits no searchable documents", async () => {
+    const output = await temporaryOutput();
+    const errorMessages: string[] = [];
+    await writeFile(join(output, "docs", "index.html"), `<!doctype html>
+      <html lang="en"><body><main><h1>Unannotated docs home</h1></main></body></html>`);
+
+    await expect(indexPagefindSite({
+      dir: pathToFileURL(`${output}/`),
+      logger: { ...logger, error: (message) => errorMessages.push(message) }
+    })).rejects.toThrow(
+      "[zuedocs] Pagefind HTML indexing failed: zero searchable documentation pages were emitted"
+    );
+    expect(errorMessages).toEqual([
+      "[zuedocs] Pagefind HTML indexing failed: zero searchable documentation pages were emitted"
+    ]);
   });
 
   test.each([
@@ -207,5 +246,50 @@ describe("indexPagefindSite", () => {
 
     expect(fake.wasClosed()).toBe(true);
     expect(fake.wasDeleted()).toBe(expectsDelete);
+  });
+
+  test.each([
+    ["missing", { writeEntryMetadata: false }],
+    ["malformed", { entryMetadataContents: "{" }],
+    ["missing languages", { entryMetadata: {} }],
+    ["invalid language metadata", { entryMetadata: { languages: { en: null } } }],
+    ["invalid page count", { entryMetadata: { languages: { en: { page_count: "1" } } } }]
+  ] as const)("fails for %s emitted bundle metadata and always cleans up", async (_case, setup) => {
+    const output = await temporaryOutput();
+    const fake = fakeApi(setup);
+    const errorMessages: string[] = [];
+
+    await expect(indexPagefindSite({
+      dir: pathToFileURL(`${output}/`),
+      logger: { ...logger, error: (message) => errorMessages.push(message) },
+      pagefindApi: fake.api
+    })).rejects.toThrow("[zuedocs] Pagefind bundle metadata failed");
+
+    expect(errorMessages).toHaveLength(1);
+    expect(errorMessages[0]).toStartWith("[zuedocs] Pagefind bundle metadata failed:");
+    expect(fake.wasClosed()).toBe(true);
+    expect(fake.wasDeleted()).toBe(true);
+  });
+
+  test("uses the summed emitted language page counts", async () => {
+    const output = await temporaryOutput();
+    const fake = fakeApi({
+      pageCount: 7,
+      entryMetadata: {
+        languages: {
+          en: { page_count: 2 },
+          fr: { page_count: 1 }
+        }
+      }
+    });
+
+    await expect(indexPagefindSite({
+      dir: pathToFileURL(`${output}/`),
+      logger,
+      pagefindApi: fake.api
+    })).resolves.toEqual({ outputPath: join(output, "pagefind"), pageCount: 3 });
+
+    expect(fake.wasClosed()).toBe(true);
+    expect(fake.wasDeleted()).toBe(true);
   });
 });
