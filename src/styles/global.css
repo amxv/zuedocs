@@ -275,6 +275,158 @@ p {
   display: none;
 }
 
+/* Documentation search */
+.docs-search {
+  --pf-text: var(--ink);
+  --pf-text-secondary: var(--muted);
+  --pf-text-muted: var(--muted);
+  --pf-background: var(--surface);
+  --pf-border: var(--line);
+  --pf-border-focus: var(--ink);
+  --pf-skeleton: var(--surface-hover);
+  --pf-skeleton-shine: var(--surface-strong);
+  --pf-hover: var(--surface-hover);
+  --pf-mark: var(--ink);
+  --pf-scroll-shadow: rgba(0, 0, 0, 0.08);
+  --pf-shadow-sm: none;
+  --pf-shadow-md: var(--menu-shadow);
+  --pf-shadow-lg: var(--menu-shadow);
+  --pf-error-bg: var(--surface-muted);
+  --pf-error-border: var(--line);
+  --pf-error-text: var(--ink);
+  --pf-error-text-secondary: var(--muted);
+  --pf-outline-focus: var(--ink);
+  --pf-outline-width: 2px;
+  --pf-outline-offset: 2px;
+  --pf-font: var(--font-sans);
+  --pf-input-height: 2.75rem;
+  --pf-input-font-size: 1rem;
+  --pf-summary-font-size: 0.78rem;
+  --pf-result-title-font-size: 1rem;
+  --pf-result-excerpt-font-size: 0.875rem;
+  --pf-results-gap: 0.65rem;
+  --pf-border-radius: 0.75rem;
+  --pf-modal-backdrop: rgba(0, 0, 0, 0.58);
+  --pf-modal-max-width: min(46rem, calc(100vw - 2rem));
+  --pf-modal-max-height: min(82dvh, 52rem);
+  --pf-modal-top: 8dvh;
+  width: clamp(9.5rem, 14vw, 12rem);
+  flex-shrink: 0;
+}
+
+:root[data-theme="dark"] .docs-search {
+  --pf-scroll-shadow: rgba(255, 255, 255, 0.06);
+  --pf-modal-backdrop: rgba(0, 0, 0, 0.76);
+}
+
+.docs-search pagefind-config,
+.docs-search pagefind-modal {
+  display: contents;
+}
+
+.docs-search pagefind-modal-trigger {
+  display: block;
+  width: 100%;
+}
+
+.docs-search .pf-trigger-btn {
+  min-height: 2rem !important;
+  height: 2rem !important;
+  padding: 0 0.65rem !important;
+  border-radius: 999px !important;
+  background: var(--surface) !important;
+  color: var(--muted) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+
+.docs-search .pf-trigger-btn:hover,
+.docs-search .pf-trigger-btn:focus-visible,
+.docs-search .pf-trigger-btn[aria-expanded="true"] {
+  border-color: var(--ink) !important;
+  background: var(--surface-hover) !important;
+  color: var(--ink) !important;
+}
+
+.docs-search .pf-trigger-text {
+  color: currentColor !important;
+}
+
+.docs-search .pf-trigger-shortcut {
+  gap: 0.15rem !important;
+  margin-inline-start: 0.5rem !important;
+}
+
+.docs-search .pf-trigger-key,
+.docs-search .pf-keyboard-key {
+  border: 1px solid var(--line) !important;
+  background: var(--surface-strong) !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+  font-family: var(--font-mono) !important;
+}
+
+.docs-search dialog.pf-modal {
+  border: 1px solid var(--line) !important;
+  border-radius: 1rem !important;
+}
+
+.docs-search .pf-modal-header {
+  padding: 1rem 1.15rem !important;
+}
+
+.docs-search .pf-modal-header .pf-input {
+  font-family: var(--font-sans) !important;
+  font-weight: 500 !important;
+}
+
+.docs-search .pf-modal-body {
+  padding: 0.75rem 1.15rem 1.15rem !important;
+}
+
+.docs-search .pf-modal-footer {
+  padding: 0.7rem 1.15rem !important;
+  font-family: var(--font-mono) !important;
+}
+
+.docs-search .pf-summary {
+  min-height: 1.4rem;
+  letter-spacing: 0.01em;
+}
+
+.docs-search .pf-result-card,
+.docs-search .pf-heading-chip {
+  box-shadow: none !important;
+}
+
+.docs-search .pf-result-title,
+.docs-search .pf-result-excerpt,
+.docs-search .pf-heading-link,
+.docs-search .pf-heading-excerpt {
+  overflow-wrap: anywhere !important;
+  word-break: break-word;
+}
+
+.docs-search .pf-result-excerpt,
+.docs-search .pf-heading-excerpt {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+.docs-search .pf-result-excerpt mark,
+.docs-search .pf-heading-excerpt mark {
+  padding: 0.04em 0.16em;
+  border-radius: 0.2em;
+  background: var(--ink) !important;
+  color: var(--bg) !important;
+}
+
+body.has-docs-search-open {
+  overflow: hidden;
+}
+
 /* Buttons */
 .button {
   display: inline-flex;
@@ -1278,13 +1430,30 @@ body.has-docs-expanded-diagram {
     order: 0;
     display: inline-grid;
   }
-  .theme-toggle {
+  .docs-search {
     order: 1;
+    width: 2rem;
+  }
+  .theme-toggle {
+    order: 2;
   }
   .site-nav {
-    order: 2;
+    order: 3;
     gap: 1rem;
     margin-left: auto;
+  }
+  .docs-search .pf-trigger-btn {
+    width: 2rem !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  .docs-search .pf-trigger-text,
+  .docs-search .pf-trigger-shortcut {
+    display: none !important;
+  }
+  .docs-search dialog.pf-modal {
+    border: 0 !important;
+    border-radius: 0 !important;
   }
   .docs-index-hero__head,
   .docs-hero__head {

@@ -1,4 +1,5 @@
 ---
+import DocsSearch from "./DocsSearch.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 import type { PrimaryNavItem, SiteConfig } from "../types";
 
@@ -10,9 +11,10 @@ interface Props {
 const { primaryNav, siteConfig } = Astro.props;
 const pathname = Astro.url.pathname;
 const showDocsMenu = pathname.startsWith("/docs/");
+const showSearch = import.meta.env.PROD;
 ---
 
-<header class="site-header">
+<header class="site-header" data-pagefind-ignore="all">
   <div class="shell site-header__inner">
     <a class="brand" href="/">
       <span class="brand__eyebrow">{siteConfig.name}</span>
@@ -43,6 +45,7 @@ const showDocsMenu = pathname.startsWith("/docs/");
           );
         })}
       </nav>
+      {showSearch && <DocsSearch />}
       {siteConfig.themeToggle !== false && <ThemeToggle />}
     </div>
   </div>
