@@ -466,7 +466,14 @@ async function scaffold(targetDir, projectName) {
   await write(
     targetDir,
     "astro.config.mjs",
-    `import { defineConfig } from "astro/config";\n\nexport default defineConfig({});\n`
+    `import { defineConfig } from "astro/config";
+import zueDocs from "zuedocs/astro";
+
+export default defineConfig({
+  output: "static",
+  integrations: [zueDocs()]
+});
+`
   );
   await write(targetDir, "src/content.config.ts", contentConfigTemplate());
   await write(targetDir, "src/data/docs.ts", dataDocsTemplate(projectName, repoName));

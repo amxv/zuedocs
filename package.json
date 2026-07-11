@@ -23,7 +23,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "bun test"
+    "test": "bun test",
+    "test:scaffold": "bun tests/scaffold-smoke.ts"
   },
   "dependencies": {
     "@pagefind/component-ui": "^1.5.2",
