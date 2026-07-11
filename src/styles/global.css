@@ -415,6 +415,28 @@ p {
   text-overflow: clip !important;
 }
 
+.docs-search .pf-result-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.55rem;
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.docs-search .pf-result-category {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.docs-search .pf-result-description {
+  overflow-wrap: anywhere;
+}
+
 .docs-search .pf-result-excerpt mark,
 .docs-search .pf-heading-excerpt mark {
   padding: 0.04em 0.16em;
@@ -1422,7 +1444,8 @@ body.has-docs-expanded-diagram {
   }
   .site-header__actions {
     width: 100%;
-    flex-wrap: nowrap;
+    min-width: 0;
+    flex-wrap: wrap;
     justify-content: flex-start;
     gap: 0.75rem;
   }
@@ -1439,8 +1462,16 @@ body.has-docs-expanded-diagram {
   }
   .site-nav {
     order: 3;
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     gap: 1rem;
-    margin-left: auto;
+    margin-left: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
   }
   .docs-search .pf-trigger-btn {
     width: 2rem !important;

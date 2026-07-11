@@ -12,11 +12,3 @@ export default function zuedocs(): AstroIntegration {
     }
   };
 }
-
-export { indexPagefindSite } from "./pagefind.ts";
-export type {
-  IndexPagefindSiteOptions,
-  IndexPagefindSiteResult,
-  PagefindApi,
-  PagefindLogger
-} from "./pagefind.ts";

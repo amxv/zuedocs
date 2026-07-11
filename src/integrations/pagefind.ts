@@ -8,9 +8,9 @@ import type {
   PagefindServiceConfig
 } from "pagefind";
 
-const PAGEFIND_GLOB = "**/*.html";
+const PAGEFIND_GLOB = "docs/**/*.html";
 const PAGEFIND_OPTIONS = {
-  rootSelector: "html",
+  rootSelector: "[data-pagefind-body]",
   includeCharacters: "._",
   keepIndexUrl: false,
   writePlayground: false,

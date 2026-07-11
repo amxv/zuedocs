@@ -37,6 +37,7 @@ jobs:
           bun run test
           bun run check
           bun run build
+          bun run test:scaffold
           npm pack --dry-run
 
       - name: Configure Git

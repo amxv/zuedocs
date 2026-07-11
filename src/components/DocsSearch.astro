@@ -1,17 +1,20 @@
 ---
 import "@pagefind/component-ui/css";
+import { DOCS_SEARCH_RESULT_TEMPLATE } from "../scripts/docsSearch";
 ---
 
 <div class="docs-search" data-docs-search data-pagefind-ignore="all">
   <pagefind-config bundle-path="/pagefind/" excerpt-length="24"></pagefind-config>
-  <pagefind-modal-trigger placeholder="Search docs"></pagefind-modal-trigger>
+  <pagefind-modal-trigger placeholder="Search docs" shortcut="disabled" hide-shortcut></pagefind-modal-trigger>
   <pagefind-modal reset-on-close>
     <pagefind-modal-header>
       <pagefind-input placeholder="Search docs"></pagefind-input>
     </pagefind-modal-header>
     <pagefind-modal-body>
       <pagefind-summary default-message="Search titles, guides, and commands"></pagefind-summary>
-      <pagefind-results max-sub-results="4"></pagefind-results>
+      <pagefind-results max-sub-results="4">
+        <script type="text/pagefind-template" is:inline set:html={DOCS_SEARCH_RESULT_TEMPLATE}></script>
+      </pagefind-results>
     </pagefind-modal-body>
     <pagefind-modal-footer>
       <pagefind-keyboard-hints></pagefind-keyboard-hints>
@@ -21,20 +24,9 @@ import "@pagefind/component-ui/css";
 
 <script>
   import "@pagefind/component-ui";
+  import { decorateDocsSearchTrigger, installDocsSearchShortcut } from "../scripts/docsSearch";
 
-  const isSearchShortcut = (event: KeyboardEvent) => {
-    return event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey;
-  };
-
-  const isEditableTarget = (target: EventTarget | null) => {
-    return target instanceof Element && Boolean(target.closest("input, textarea, select, [contenteditable]:not([contenteditable='false'])"));
-  };
-
-  document.addEventListener("keydown", (event) => {
-    if (isSearchShortcut(event) && isEditableTarget(event.target)) {
-      event.stopImmediatePropagation();
-    }
-  }, true);
+  installDocsSearchShortcut(document);
 
   const syncBodyLock = (dialog: HTMLDialogElement) => {
     document.body.classList.toggle("has-docs-search-open", dialog.open);
@@ -66,6 +58,7 @@ import "@pagefind/component-ui/css";
 
   customElements.whenDefined("pagefind-modal").then(() => {
     document.querySelectorAll<HTMLElement>("[data-docs-search]").forEach((root) => {
+      decorateDocsSearchTrigger(root);
       const dialog = root.querySelector<HTMLDialogElement>("dialog.pf-modal");
       if (!dialog || dialog.dataset.docsSearchReady === "true") return;
 

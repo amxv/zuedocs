@@ -59,6 +59,20 @@ try {
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
   run(["bun", "install"], scaffoldRoot);
+
+  const exportScript = join(scaffoldRoot, "verify-package-export.mjs");
+  await writeFile(exportScript, `
+import * as integration from "zuedocs/astro";
+const exported = Object.keys(integration).sort();
+if (JSON.stringify(exported) !== JSON.stringify(["default"])) {
+  throw new Error(\`Expected only the default zuedocs/astro export, received: \${exported.join(", ")}\`);
+}
+if (typeof integration.default !== "function") {
+  throw new Error("The packed zuedocs/astro default export is not a function");
+}
+`, "utf8");
+  run(["bun", exportScript], scaffoldRoot);
+
   run(["bun", "run", "check"], scaffoldRoot);
   run(["bun", "run", "build"], scaffoldRoot);
 
@@ -75,11 +89,15 @@ try {
   const queryScript = join(temporaryRoot, "query-pagefind.mjs");
   await writeFile(queryScript, `
 import * as pagefind from ${JSON.stringify(join(scaffoldRoot, "dist/pagefind/pagefind.js"))};
+await pagefind.options({ baseUrl: "/" });
 await pagefind.init();
 const result = await pagefind.search("What to customize first");
 const pages = await Promise.all(result.results.map((entry) => entry.data()));
-if (!pages.some((page) => page.url.endsWith("/docs/quickstart/") || page.url.endsWith("/docs/quickstart"))) {
+if (!pages.some((page) => page.url === "/docs/quickstart/")) {
   throw new Error(\`Expected quickstart result, received: \${pages.map((page) => page.url).join(", ")}\`);
+}
+if (pages.some((page) => page.url.includes("file:") || page.url.includes(${JSON.stringify(scaffoldRoot)}))) {
+  throw new Error(\`Search returned a filesystem-derived URL: \${pages.map((page) => page.url).join(", ")}\`);
 }
 `, "utf8");
   run(["bun", queryScript], scaffoldRoot);
