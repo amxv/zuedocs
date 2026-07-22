@@ -17,12 +17,18 @@ const {
   description,
   siteConfig,
   primaryNav,
-  faviconHref = "/favicon.svg"
+  faviconHref: faviconHrefProp
 } = Astro.props;
+
+const faviconHref = faviconHrefProp ?? siteConfig.faviconHref ?? siteConfig.logoHref ?? "/favicon.svg";
+const accentStyle = [
+  siteConfig.accentColor ? `--site-accent:${siteConfig.accentColor}` : "",
+  siteConfig.accentColorDark ? `--site-accent-dark:${siteConfig.accentColorDark}` : ""
+].filter(Boolean).join(";");
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style={accentStyle || undefined}>
   <head>
     <script is:inline>
       (() => {

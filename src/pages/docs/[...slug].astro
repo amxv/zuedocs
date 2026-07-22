@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
-import BaseLayout from "zuedocs-published/layouts/BaseLayout.astro";
-import DocsPageLayout from "zuedocs-published/layouts/DocsPageLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DocsPageLayout from "../../layouts/DocsPageLayout.astro";
 import { docCategories, primaryNav, siteConfig } from "../../data/docs";
 
 const docs = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);

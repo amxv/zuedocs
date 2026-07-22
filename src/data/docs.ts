@@ -13,7 +13,6 @@ export const docCategories = [
 ] as const;
 
 export const primaryNav = [
-  { href: "/", label: "Overview" },
   { href: "/docs", label: "Docs" },
   { href: siteConfig.repoUrl, label: "GitHub", external: true }
 ];

@@ -6,6 +6,7 @@ interface Props {
 }
 
 const { siteConfig } = Astro.props;
+const brandImageHref = siteConfig.logoHref ?? siteConfig.faviconHref;
 
 const footerSections: readonly FooterSection[] = siteConfig.footerSections ?? [
   {
@@ -31,23 +32,42 @@ const footerSections: readonly FooterSection[] = siteConfig.footerSections ?? [
 ---
 
 <footer class="site-footer">
-  <div class="shell site-footer__inner">
-    {footerSections.map((section) => (
-      <div>
-        <p class="site-footer__title">{section.title}</p>
-        <p>
-          {section.text}
-          {section.linkHref && (
-            <>
-              {section.linkPrefix}
-              <a href={section.linkHref} target="_blank" rel="noreferrer">
-                {section.linkLabel ?? section.linkHref}
-              </a>
-              {section.linkSuffix}
-            </>
-          )}
-        </p>
-      </div>
-    ))}
+  <div class="shell">
+    <div class="site-footer__mast">
+      <a class="footer-brand" href="/">
+        {brandImageHref && (
+          <span class="footer-brand__logo"><img src={brandImageHref} alt="" /></span>
+        )}
+        <span>{siteConfig.name}</span>
+      </a>
+      <p>{siteConfig.strapline}</p>
+      <a class="site-footer__repo" href={siteConfig.repoUrl} target="_blank" rel="noreferrer">
+        View repository <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <div class="site-footer__inner">
+      {footerSections.map((section) => (
+        <section class="site-footer__section">
+          <div>
+            <p class="site-footer__title">{section.title}</p>
+            <p>
+              {section.text}
+              {section.linkHref && (
+                <>
+                  {section.linkPrefix}
+                  <a href={section.linkHref} target="_blank" rel="noreferrer">
+                    {section.linkLabel ?? section.linkHref}
+                  </a>
+                  {section.linkSuffix}
+                </>
+              )}
+            </p>
+          </div>
+        </section>
+      ))}
+    </div>
+    <div class="site-footer__base">
+      <a href="https://github.com/amxv/zuedocs/" target="_blank" rel="noreferrer">powered by zuedocs</a>
+    </div>
   </div>
 </footer>

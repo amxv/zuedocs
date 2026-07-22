@@ -85,7 +85,6 @@ export const docCategories = [
 ] as const;
 
 export const primaryNav = [
-  { href: "/", label: "Overview" },
   { href: "/docs", label: "Docs" },
   { href: siteConfig.repoUrl, label: "GitHub", external: true }
 ];
@@ -211,7 +210,6 @@ const grouped = docCategories.map((category) => ({
             <a class="docs-index__card" href={\`/docs/\${entry.id}\`}>
               <h2>{entry.data.title}</h2>
               <p>{entry.data.description}</p>
-              <span>Open guide</span>
             </a>
           ))}
         </div>

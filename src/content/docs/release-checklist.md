@@ -1,7 +1,7 @@
 ---
 title: Release checklist
 description: Use a short pre-merge checklist so the docs site stays tidy as the template evolves into a real product property.
-order: 5
+order: 7
 category: Operations
 summary: A durable checklist for content, styling, and deployment validation before you cut a release.
 ---

@@ -1,7 +1,7 @@
 ---
 title: Deployment workflow
 description: Deploy the static Astro site to Vercel and attach a production domain managed in Cloudflare DNS.
-order: 4
+order: 6
 category: Operations
 summary: A practical deployment path that matches the Vercel and Cloudflare workflow patterns already used around Gooselake.
 ---

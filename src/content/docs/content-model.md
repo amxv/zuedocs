@@ -1,7 +1,7 @@
 ---
 title: Content model
 description: Understand how the docs collection is organized and where the template expects homepage, navigation, and long-form content to live.
-order: 2
+order: 3
 category: Structure
 summary: A map of the files that matter when you adapt the template to a real product.
 ---

@@ -10,15 +10,31 @@ interface Props {
 
 const { primaryNav, siteConfig } = Astro.props;
 const pathname = Astro.url.pathname;
+const isDocsRoute = pathname === "/docs" || pathname.startsWith("/docs/");
 const showDocsMenu = pathname.startsWith("/docs/");
 const showSearch = import.meta.env.PROD;
+const brandImageHref = siteConfig.logoHref ?? siteConfig.faviconHref;
+const headerNavItems = primaryNav.filter((item) => {
+  if (item.external) return true;
+
+  try {
+    return new URL(item.href, Astro.url.origin).pathname !== "/";
+  } catch {
+    return item.href !== "/";
+  }
+});
 ---
 
-<header class="site-header" data-pagefind-ignore="all">
+<header class:list={["site-header", isDocsRoute && "site-header--docs"]} data-pagefind-ignore="all">
   <div class="shell site-header__inner">
     <a class="brand" href="/">
-      <span class="brand__eyebrow">{siteConfig.name}</span>
-      <span class="brand__title">{siteConfig.strapline}</span>
+      {brandImageHref && (
+        <span class="brand__logo"><img src={brandImageHref} alt="" /></span>
+      )}
+      <span class="brand__copy">
+        <span class="brand__name">{siteConfig.name}</span>
+        <span class="brand__strapline">{siteConfig.strapline}</span>
+      </span>
     </a>
     <div class="site-header__actions">
       {showDocsMenu && (
@@ -31,16 +47,30 @@ const showSearch = import.meta.env.PROD;
         </button>
       )}
       <nav class="site-nav" aria-label="Primary">
-        {primaryNav.map((item) => {
+        {headerNavItems.map((item, index) => {
           const active = !item.external && pathname === item.href;
+          const isRepositoryLink = item.href === siteConfig.repoUrl;
           return (
             <a
-              class:list={["site-nav__link", active && "is-active"]}
+              class:list={["site-nav__link", active && "is-active", isRepositoryLink && "is-repository"]}
               href={item.href}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noreferrer" : undefined}
             >
-              {item.label}
+              {!isRepositoryLink && (
+                <span class="site-nav__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              )}
+              {isRepositoryLink ? (
+                <>
+                  <svg class="site-nav__github" viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+                    <path d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.23.48-2.7-1.08-2.7-1.08-.36-.93-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.74-3.66 3.94.29.25.54.74.54 1.5l-.01 2.22c0 .21.15.46.55.38A8 8 0 0 0 8 0Z" />
+                  </svg>
+                  <span class="visually-hidden">{item.label}</span>
+                </>
+              ) : (
+                <span>{item.label}</span>
+              )}
+              {item.external && !isRepositoryLink && <span class="site-nav__external" aria-hidden="true">↗</span>}
             </a>
           );
         })}

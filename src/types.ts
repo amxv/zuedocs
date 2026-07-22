@@ -3,6 +3,10 @@ export interface SiteConfig {
   strapline: string;
   description: string;
   repoUrl: string;
+  logoHref?: string;
+  faviconHref?: string;
+  accentColor?: string;
+  accentColorDark?: string;
   themeToggle?: boolean;
   footerSections?: readonly FooterSection[];
 }

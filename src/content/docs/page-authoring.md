@@ -1,7 +1,7 @@
 ---
 title: Page authoring
 description: Use the starter writing patterns to keep docs pages readable, navigable, and consistent as the collection grows.
-order: 3
+order: 5
 category: Structure
 summary: Lightweight editorial rules for turning markdown pages into a coherent docs experience.
 ---

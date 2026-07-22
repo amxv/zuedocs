@@ -115,12 +115,15 @@ describe("DocsSearch", () => {
     }
   });
 
-  test("uses a wrapping, independently scrollable mobile navigation row", async () => {
+  test("uses an ordered, independently scrollable mobile header row", async () => {
     const styles = await readFile(resolve(packageRoot, "src/styles/global.css"), "utf8");
     const mobile = styles.slice(styles.indexOf("@media (max-width: 768px)"));
-    expect(mobile).toContain("flex-wrap: wrap");
-    expect(mobile).toContain("flex: 1 1 100%");
+    expect(mobile).toContain(".site-header__inner {\n    display: flex");
+    expect(mobile).toContain("order: 1");
+    expect(mobile).toContain("order: 2");
+    expect(mobile).toContain("margin-left: auto");
     expect(mobile).toContain("max-width: 100%");
     expect(mobile).toContain("overflow-x: auto");
+    expect(mobile).not.toContain("flex-wrap: wrap");
   });
 });

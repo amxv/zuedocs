@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "zuedocs-published/layouts/BaseLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import DocsPageActions from "zuedocs-published/components/DocsPageActions.astro";
 import { docCategories, primaryNav, siteConfig } from "../../data/docs";
 
@@ -42,7 +42,6 @@ const grouped = docCategories.map((category) => ({
             <a class="docs-index__card" href={`/docs/${entry.id}`}>
               <h2>{entry.data.title}</h2>
               <p>{entry.data.description}</p>
-              <span>Open guide</span>
             </a>
           ))}
         </div>

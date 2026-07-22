@@ -1,18 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
-
 .home {
   --home-heading: "Space Grotesk", var(--font-sans);
-  --home-accent: #c63d00;
+  --home-accent: var(--signal);
   --home-grid: color-mix(in srgb, var(--line) 62%, transparent);
   --home-muted-ink: color-mix(in srgb, var(--muted) 88%, transparent);
   position: relative;
   background:
     linear-gradient(90deg, transparent calc(50% - 0.5px), var(--home-grid) 50%, transparent calc(50% + 0.5px)) center top / min(1080px, calc(100vw - 4rem)) 100% no-repeat,
     var(--bg);
-}
-
-:root[data-theme="dark"] .home {
-  --home-accent: #ff6a2a;
 }
 
 .home::before {
