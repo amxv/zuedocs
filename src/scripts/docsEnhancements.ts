@@ -1,3 +1,5 @@
+export {};
+
 const COPY_RESET_MS = 1600;
 const ICON_COPY = "⧉";
 const ICON_CHECK = "✓";

@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import DocsPageActions from "../../components/DocsPageActions.astro";
+import BaseLayout from "zuedocs-published/layouts/BaseLayout.astro";
+import DocsPageActions from "zuedocs-published/components/DocsPageActions.astro";
 import { docCategories, primaryNav, siteConfig } from "../../data/docs";
 
 const entries = (await getCollection("docs")).sort((a, b) => a.data.order - b.data.order);
@@ -53,5 +53,5 @@ const grouped = docCategories.map((category) => ({
 
 
 <script>
-  import "../../scripts/docsEnhancements";
+  import "zuedocs-published/docsEnhancements";
 </script>
