@@ -1,4 +1,5 @@
 tmp/
+.agents/gg/queue.md
 .DS_Store
 target/
 node_modules/
