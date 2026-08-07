@@ -6,13 +6,13 @@ const packageRoot = resolve(import.meta.dir, "..");
 const temporaryRoot = await mkdtemp(join(tmpdir(), "zuedocs-scaffold-smoke-"));
 const scaffoldRoot = join(temporaryRoot, "starter-docs");
 
-function run(command: string[], cwd: string) {
+function run(command: string[], cwd: string, env = process.env) {
   const result = Bun.spawnSync({
     cmd: command,
     cwd,
     stdout: "inherit",
     stderr: "inherit",
-    env: process.env
+    env
   });
 
   if (result.exitCode !== 0) {
@@ -74,17 +74,39 @@ if (typeof integration.default !== "function") {
   run(["bun", exportScript], scaffoldRoot);
 
   run(["bun", "run", "check"], scaffoldRoot);
-  run(["bun", "run", "build"], scaffoldRoot);
+  run(["bun", "run", "build"], scaffoldRoot, {
+    ...process.env,
+    VERCEL_PROJECT_PRODUCTION_URL: "starter-docs.example.com"
+  });
 
   const builtHome = await readFile(join(scaffoldRoot, "dist/index.html"), "utf8");
   if (!builtHome.includes("data-docs-search")) {
     throw new Error("Generated production site does not include the shared search UI");
+  }
+  if (!builtHome.includes('rel="sitemap"') || !builtHome.includes('href="/sitemap.xml"')) {
+    throw new Error("Generated production site does not advertise the shared sitemap");
   }
   await Promise.all([
     readFile(join(scaffoldRoot, "dist/pagefind/pagefind-entry.json"), "utf8"),
     readFile(join(scaffoldRoot, "dist/pagefind/pagefind.js"), "utf8"),
     readFile(join(scaffoldRoot, "dist/pagefind/pagefind-worker.js"), "utf8")
   ]);
+
+  const sitemap = await readFile(join(scaffoldRoot, "dist/sitemap.xml"), "utf8");
+  for (const url of [
+    "https://starter-docs.example.com/",
+    "https://starter-docs.example.com/docs/",
+    "https://starter-docs.example.com/docs/quickstart/",
+    "https://starter-docs.example.com/docs/release-flow/",
+    "https://starter-docs.example.com/docs/shared-surface/"
+  ]) {
+    if (!sitemap.includes(`<loc>${url}</loc>`)) {
+      throw new Error(`Generated sitemap is missing ${url}`);
+    }
+  }
+  if (sitemap.includes(".md</loc>") || sitemap.includes("pagefind")) {
+    throw new Error("Generated sitemap includes a non-HTML docs endpoint or search asset");
+  }
 
   const queryScript = join(temporaryRoot, "query-pagefind.mjs");
   await writeFile(queryScript, `

@@ -1,8 +1,16 @@
 import type { AstroIntegration } from "astro";
 
 import { indexPagefindSite } from "./pagefind.ts";
+import {
+  resolveSitemapSite,
+  warnMissingSitemapSite,
+  writeSitemap,
+  type ResolvedSitemapSite
+} from "./sitemap.ts";
 
 export default function zuedocs(): AstroIntegration {
+  let sitemapSite: ResolvedSitemapSite | undefined;
+
   return {
     name: "amxv:zuedocs",
     hooks: {
@@ -15,8 +23,18 @@ export default function zuedocs(): AstroIntegration {
           }
         });
       },
-      "astro:build:done": async ({ dir, logger }) => {
+      "astro:config:done": ({ config }) => {
+        sitemapSite = resolveSitemapSite({ astroSite: config.site });
+      },
+      "astro:build:done": async ({ dir, logger, pages }) => {
         await indexPagefindSite({ dir, logger });
+
+        if (!sitemapSite) {
+          warnMissingSitemapSite(logger);
+          return;
+        }
+
+        await writeSitemap({ dir, pages, site: sitemapSite.url, logger });
       }
     }
   };

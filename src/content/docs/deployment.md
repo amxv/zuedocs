@@ -16,6 +16,8 @@ This template builds to static output, so Vercel deployment is straightforward:
 
 Preview deployments should work on every push once dependencies install cleanly.
 
+The shared `zuedocs()` integration uses Vercel's production project domain at build time to generate `/sitemap.xml`, so a normal Vercel consumer does not need a separate sitemap integration or site URL setting. The sitemap is built from the HTML pages Astro actually emitted for that project.
+
 ## CLI path
 
 If you prefer the CLI workflow:
@@ -48,4 +50,5 @@ After the Vercel project and DNS are wired:
 1. Confirm the apex or subdomain resolves correctly.
 2. Check that `/` and `/docs` both load without asset errors.
 3. Open one deep docs route directly to verify static routing.
-4. Re-run `bun run build` locally if the deploy behaves differently than expected.
+4. Open `/sitemap.xml` and confirm the production domain and current docs routes are present.
+5. Re-run `bun run build` locally if the deploy behaves differently than expected.

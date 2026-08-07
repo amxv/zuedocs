@@ -21,6 +21,7 @@ const {
 } = Astro.props;
 
 const faviconHref = faviconHrefProp ?? siteConfig.faviconHref ?? siteConfig.logoHref ?? "/favicon.svg";
+const sitemapHref = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/sitemap.xml`;
 const accentStyle = [
   siteConfig.accentColor ? `--site-accent:${siteConfig.accentColor}` : "",
   siteConfig.accentColorDark ? `--site-accent-dark:${siteConfig.accentColorDark}` : ""
@@ -49,6 +50,7 @@ const accentStyle = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
+    <link rel="sitemap" href={sitemapHref} />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">

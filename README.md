@@ -9,6 +9,7 @@ It gives you a shared presentation layer for:
 - docs article pages with sidebar and table of contents
 - shared styles
 - client-side docs enhancements like copy buttons, page action menus, Mermaid rendering, and responsive table wrappers
+- production search and sitemap generation through the shared Astro integration
 
 The intended model is:
 
@@ -36,6 +37,7 @@ Each consuming repo should keep these pieces in its own codebase:
 
 `zuedocs` currently exports:
 
+- `zuedocs/astro`
 - `zuedocs/layouts/BaseLayout.astro`
 - `zuedocs/layouts/DocsPageLayout.astro`
 - `zuedocs/components/SiteHeader.astro`
@@ -126,6 +128,20 @@ Install:
 ```bash
 bun add -d zuedocs
 ```
+
+Register the first-party integration once in `astro.config.mjs`:
+
+```js
+import { defineConfig } from "astro/config";
+import zueDocs from "zuedocs/astro";
+
+export default defineConfig({
+  output: "static",
+  integrations: [zueDocs()]
+});
+```
+
+That integration owns shared build-time features such as production search indexing and sitemap generation. Individual docs repos do not install or configure those features separately.
 
 Example:
 
@@ -224,6 +240,14 @@ Examples:
 - `/docs/deployment.md`
 
 This is useful when another tool or agent wants the source markdown instead of rendered HTML.
+
+## Sitemap generation
+
+Production builds using `zueDocs()` generate `/sitemap.xml` from the HTML pages Astro actually emitted. The shared layout also advertises the sitemap with `rel="sitemap"`.
+
+No sitemap-specific consumer configuration is needed on Vercel: ZueDocs uses Vercel's production project URL automatically. Cloudflare Pages deployment URLs are also detected. If a different deployment platform is used, an existing Astro `site` value is used instead.
+
+Raw `.md` endpoints and error pages are not included in the sitemap.
 
 ## Release model
 

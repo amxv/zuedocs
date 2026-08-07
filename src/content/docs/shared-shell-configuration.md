@@ -119,6 +119,7 @@ The package supplies:
 - responsive sticky header and footer
 - light, dark, and system theme modes
 - documentation search in production
+- automatic production sitemap generation
 - the grouped docs index
 - desktop Docs Map and table of contents
 - mobile Docs Map drawer
@@ -127,6 +128,8 @@ The package supplies:
 - raw Markdown routes when the consumer keeps the generated route handlers
 
 Consumers supply their own docs collection, categories, page descriptions, headings, and Markdown content. Updating the package should improve the shared behavior without requiring those documents to move.
+
+The `zuedocs()` Astro integration generates `/sitemap.xml` from the public HTML pages emitted by each consumer. Vercel's production project domain is detected automatically, so normal ZueDocs deployments do not need a site-specific sitemap package or config block. An explicit Astro `site` value remains the override for other deployment setups. Raw Markdown endpoints and error pages stay out of the sitemap.
 
 ## Roll out a shared-shell release
 
