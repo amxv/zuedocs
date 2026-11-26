@@ -1582,10 +1582,22 @@ body.has-docs-expanded-diagram {
   stroke: var(--muted) !important;
 }
 
+.docs-mermaid svg .cluster rect,
+.docs-mermaid svg .cluster polygon,
+.docs-mermaid svg .cluster path {
+  fill: var(--surface-muted) !important;
+  stroke: var(--muted) !important;
+}
+
 .docs-mermaid svg .edgeLabel,
+.docs-mermaid svg .edgeLabel p,
+.docs-mermaid svg .edgeLabel span,
+.docs-mermaid svg .edgeLabel div,
+.docs-mermaid svg .edgeLabel rect,
 .docs-mermaid svg .edgeLabel .labelBkg,
 .docs-mermaid svg .labelBkg {
   background: var(--diagram-bg) !important;
+  background-color: var(--diagram-bg) !important;
   fill: var(--diagram-bg) !important;
 }
 
