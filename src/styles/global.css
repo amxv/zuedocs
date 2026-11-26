@@ -1595,8 +1595,19 @@ body.has-docs-expanded-diagram {
   stroke: var(--muted) !important;
 }
 
+/* Edges of every diagram type: flowchart, state (.transition), class
+   (.relation), ER (.relationshipLine), sequence (.messageLine*), and the
+   edge-pattern classes Mermaid 11 puts on all rendered edges. */
 .docs-mermaid svg .edgePath .path,
+.docs-mermaid svg .edgePaths path,
 .docs-mermaid svg .flowchart-link,
+.docs-mermaid svg path.transition,
+.docs-mermaid svg .edge-pattern-solid,
+.docs-mermaid svg .edge-pattern-dashed,
+.docs-mermaid svg .edge-pattern-dotted,
+.docs-mermaid svg .relationshipLine,
+.docs-mermaid svg .messageLine0,
+.docs-mermaid svg .messageLine1,
 .docs-mermaid svg line,
 .docs-mermaid svg path.relation {
   stroke: var(--muted) !important;
