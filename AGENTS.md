@@ -2,12 +2,7 @@
 
 This repo is not just a docs site. It is the shared docs package and scaffold used by downstream repos.
 
-Current known downstream consumers include:
-
-- `webctx`
-- `cf-cli`
-- `zodex`
-- `gooselake`
+Downstream consumers are the repositories with the `zuedocs` GitHub topic. List them with `zuedocs-fleet list` (see "Upgrading Consumers" below). There are about 30, public and private, including `webctx`, `cf-cli`, `zodex`, `gooselake`, and `boatparty`.
 
 Treat changes here as package changes first and local site changes second.
 
@@ -158,20 +153,27 @@ bun install --force --no-cache
 
 This package is published to npm automatically from GitHub Actions on pushes to `main`.
 
-Current flow:
+Current flow in `release.yml`:
 
-1. change `zuedocs`
-2. push to `main`
-3. `release.yml` validates the package
-4. `release.yml` bumps `package.json` by one patch version
-5. `release.yml` commits that bump, tags it like `v0.1.7`, and publishes to npm
+1. `smoke` (the `fleet.yml` workflow) builds every consumer against the packed package and blocks the release on a regression. `[skip smoke]` in the commit message skips it.
+2. `publish` validates the package (including `go vet` and `go test`), bumps `package.json` by one patch version, commits and tags it like `v0.1.7`, and publishes to npm.
+3. `rollout` (`fleet.yml` again) upgrades every consumer: a passing site gets a commit on its default branch, which its own docs workflow deploys, and a failing one gets a `zuedocs/upgrade-<version>` pull request with the log.
 
-After publishing, downstream repos may need:
+Smoke and rollout need the `ZUEDOCS_FLEET_TOKEN` secret (or the `ZUEDOCS_FLEET_APP_ID` variable plus `ZUEDOCS_FLEET_APP_PRIVATE_KEY` secret). Without it they only warn, and consumers must be upgraded by hand.
 
-- Renovate to open PRs on its schedule
-- or a manual version bump if an immediate update is required
+## Upgrading Consumers
 
-Do not assume downstream repos are automatically updated the moment npm publish succeeds.
+Use the Go CLI in `cmd/zuedocs-fleet` (logic in `internal/fleet`) instead of bumping repos one by one:
+
+```bash
+go run ./cmd/zuedocs-fleet rollout --version latest --dry-run   # all consumers, push nothing
+go run ./cmd/zuedocs-fleet rollout --version latest --only angelos
+go run ./cmd/zuedocs-fleet upgrade ../some-repo                  # one local checkout, no commit
+```
+
+When you scaffold or migrate a docs site in another repo, tag that repo with `go run ./cmd/zuedocs-fleet adopt <repo>` so future releases reach it. `adopt` with no arguments lists dependents that are not tagged yet. Leave forks and stale copies (such as `boatparty-private`) untagged.
+
+A site that cannot pass the rollout's install, check, and build will get a pull request on every release until it is fixed. Prefer fixing the consumer (or making the package more configurable) over special cases in the CLI.
 
 ## Deployment Notes For Consumers
 

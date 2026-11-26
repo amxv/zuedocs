@@ -1,0 +1,126 @@
+name: fleet
+
+# Keeps every zuedocs consumer site current. The release workflow calls this
+# twice: "smoke" before publishing (build every consumer against the packed
+# package) and "rollout" after (push the new version to every consumer).
+# It can also be run by hand from the Actions tab.
+#
+# Needs a token that can push to and open pull requests on the consumer
+# repositories: either a GitHub App (variable ZUEDOCS_FLEET_APP_ID and secret
+# ZUEDOCS_FLEET_APP_PRIVATE_KEY) or a fine-grained token in the secret
+# ZUEDOCS_FLEET_TOKEN. Without one, the job only prints a warning.
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: "rollout pushes the version to every consumer; smoke only builds them against this commit"
+        type: choice
+        options: [rollout, smoke]
+        default: rollout
+      version:
+        description: "zuedocs version to roll out"
+        type: string
+        default: latest
+      only:
+        description: "Comma-separated repository names (empty for every consumer)"
+        type: string
+        default: ""
+      dry_run:
+        description: "Upgrade, check, and build, but push nothing"
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      command:
+        type: string
+        required: true
+      version:
+        type: string
+        default: latest
+
+permissions:
+  contents: read
+
+jobs:
+  fleet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Create GitHub App token
+        id: app
+        if: vars.ZUEDOCS_FLEET_APP_ID != ''
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.ZUEDOCS_FLEET_APP_ID }}
+          private-key: ${{ secrets.ZUEDOCS_FLEET_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+
+      - name: Check credentials
+        id: auth
+        env:
+          TOKEN: ${{ steps.app.outputs.token || secrets.ZUEDOCS_FLEET_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::warning title=zuedocs fleet skipped::Add the ZUEDOCS_FLEET_TOKEN secret (or a GitHub App) so releases can build and upgrade consumer sites."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Go
+        if: steps.auth.outputs.ready == 'true'
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Setup Bun
+        if: steps.auth.outputs.ready == 'true'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - name: Setup Node
+        if: steps.auth.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Build zuedocs-fleet
+        if: steps.auth.outputs.ready == 'true'
+        run: |
+          go build -o "$RUNNER_TEMP/bin/zuedocs-fleet" ./cmd/zuedocs-fleet
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Smoke build consumers against this commit
+        if: steps.auth.outputs.ready == 'true' && inputs.command == 'smoke'
+        env:
+          ZUEDOCS_FLEET_TOKEN: ${{ steps.app.outputs.token || secrets.ZUEDOCS_FLEET_TOKEN }}
+          ONLY: ${{ inputs.only }}
+        run: |
+          tarball="$(npm pack --json --pack-destination "$RUNNER_TEMP" | jq -r '.[0].filename')"
+          zuedocs-fleet smoke --tarball "$RUNNER_TEMP/$tarball" --only "$ONLY" --workdir "$RUNNER_TEMP/fleet"
+
+      - name: Roll out to consumers
+        if: steps.auth.outputs.ready == 'true' && inputs.command == 'rollout'
+        env:
+          ZUEDOCS_FLEET_TOKEN: ${{ steps.app.outputs.token || secrets.ZUEDOCS_FLEET_TOKEN }}
+          VERSION: ${{ inputs.version }}
+          ONLY: ${{ inputs.only }}
+          DRY_RUN: ${{ inputs.dry_run == true }}
+        run: zuedocs-fleet rollout --version "$VERSION" --only "$ONLY" --dry-run="$DRY_RUN" --workdir "$RUNNER_TEMP/fleet"
+
+      - name: Upload logs
+        if: always() && steps.auth.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: zuedocs-fleet-${{ inputs.command }}-logs
+          path: ${{ runner.temp }}/fleet/logs
+          if-no-files-found: ignore

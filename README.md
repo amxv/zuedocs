@@ -263,13 +263,38 @@ Canonical URLs and preview images need the deployed URL, which comes from Astro'
 
 `zuedocs` is designed to be published and consumed as a versioned dependency.
 
-Release flow:
+Release flow, all in GitHub Actions on each non-bot push to `main`:
 
-1. push a change to `main`
-2. GitHub Actions validates the package
-3. GitHub Actions bumps `package.json` by one patch version
-4. GitHub Actions creates a release commit and tag like `v0.1.7`
-5. GitHub Actions publishes that version to npm
-6. downstream repos update via Renovate or manual dependency bumps
+1. **Smoke build.** Every consumer site is built against the packed package. A site that fails only with the new package blocks the release. A site that already failed on its current version is reported but does not block. Put `[skip smoke]` in the commit message to skip this step.
+2. **Publish.** The package is validated, bumped by one patch version, tagged like `v0.1.7`, and published to npm.
+3. **Rollout.** Every consumer is upgraded to the new version. If its check and build pass, the bump is committed straight to its default branch, and that repository's own docs workflow deploys it. If not, the bump goes to a `zuedocs/upgrade-<version>` pull request with the failure log.
 
-Every non-bot push to `main` produces a new patch release automatically. This keeps shared docs UI centralized instead of copied across repos.
+The job summary of each run has a table of what happened to every site.
+
+## Upgrading consumer sites
+
+`zuedocs-fleet` is a Go CLI in this repo (`cmd/zuedocs-fleet`) that the release workflow uses. It also works locally:
+
+```bash
+go install github.com/amxv/zuedocs/cmd/zuedocs-fleet@latest
+
+zuedocs-fleet upgrade [dir]        # upgrade the sites in one checkout, then check and build (no commit)
+zuedocs-fleet list                 # consumer repositories
+zuedocs-fleet adopt                # list repositories that depend on zuedocs but are not tagged
+zuedocs-fleet adopt <repo>         # tag a repository as a consumer
+zuedocs-fleet smoke --tarball zuedocs-0.1.30.tgz   # build every consumer against a packed package
+zuedocs-fleet rollout --version latest [--only repo,...] [--dry-run]
+```
+
+**Consumers are repositories with the `zuedocs` GitHub topic.** Tag a new docs repo with `zuedocs-fleet adopt <repo>` or `gh repo edit --add-topic zuedocs`. Leave forks and stale copies untagged so they never receive upgrades.
+
+**Sites are found automatically.** Any `package.json` in the repository that depends on `zuedocs` is a site, whether it lives in `docs/`, `site/`, `apps/site/`, or the repository root. The package manager comes from the nearest lockfile, so workspace sites install from the workspace root. Bun wins when one directory has several lockfiles. Checks run `docs:check`, `check`, or `typecheck`, and builds run `docs:build` or `build`, whichever the site's `package.json` has first. Only `package.json` files and lockfiles are committed.
+
+**Credentials.** Locally, the CLI uses `gh auth token`. In Actions, the `fleet` workflow needs a token that can push to and open pull requests on the consumer repositories. Use either:
+
+- a fine-grained personal access token with access to all repositories and read and write permission for Contents and Pull requests, stored as the `ZUEDOCS_FLEET_TOKEN` secret, or
+- a GitHub App installed on the account with the same permissions, with its ID in the `ZUEDOCS_FLEET_APP_ID` variable and its private key in the `ZUEDOCS_FLEET_APP_PRIVATE_KEY` secret.
+
+Without either, the smoke and rollout jobs print a warning and the release still publishes.
+
+The `fleet` workflow can also be run by hand from the Actions tab, to retry a rollout, to roll out to some repositories with `only`, or to run a dry run.

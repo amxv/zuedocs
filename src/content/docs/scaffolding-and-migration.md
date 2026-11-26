@@ -89,6 +89,16 @@ Change the consumer repository when the request affects:
 - product logo or favicon
 - repository-specific deployment settings
 
+## Keep the site current
+
+Tag the GitHub repository with the `zuedocs` topic:
+
+```bash
+gh repo edit --add-topic zuedocs
+```
+
+Each zuedocs release then builds the site against the new package before publishing, and afterwards upgrades it. If the site's check and build pass, the bump is committed to the default branch, and the repository's own docs workflow deploys it. Otherwise it gets a pull request with the failure log. To upgrade one checkout by hand, run `zuedocs-fleet upgrade` in it. See the zuedocs README for the CLI.
+
 ## Validate the result serially
 
 Run Astro validation in order:

@@ -539,6 +539,9 @@ async function main() {
   console.log("  bun install");
   console.log("  bun run check");
   console.log("  bun run dev");
+  console.log("");
+  console.log("To get future zuedocs releases automatically, tag the GitHub repository:");
+  console.log("  gh repo edit --add-topic zuedocs");
 }
 
 main().catch((error) => {
