@@ -8,8 +8,8 @@ It gives you a shared presentation layer for:
 - docs index pages
 - docs article pages with sidebar and table of contents
 - shared styles
-- client-side docs enhancements like copy buttons, page action menus, Mermaid rendering, and responsive table wrappers
-- production search and sitemap generation through the shared Astro integration
+- client-side docs enhancements like copy buttons, page action menus, Mermaid rendering, responsive table wrappers, an "On this page" outline with reading progress, heading links, and Previous / Next links
+- build-time features through the shared Astro integration: search, sitemap, callouts, social preview images, `llms.txt`, broken-link checking, a 404 page, and frontmatter redirects
 
 The intended model is:
 
@@ -60,7 +60,6 @@ The exported types currently include:
 - `strapline`
 - `description`
 - `repoUrl`
-- optional `footerSections`
 
 ## Scaffold a new docs site
 
@@ -179,19 +178,7 @@ export const siteConfig = {
   name: "My Product",
   strapline: "Documentation",
   description: "Docs for My Product.",
-  repoUrl: "https://github.com/my-org/my-product",
-  footerSections: [
-    {
-      title: "My Product",
-      text: "Short footer description for the docs site."
-    },
-    {
-      title: "Repository",
-      linkPrefix: "Source: ",
-      linkHref: "https://github.com/my-org/my-product",
-      linkLabel: "github.com/my-org/my-product"
-    }
-  ]
+  repoUrl: "https://github.com/my-org/my-product"
 } as const;
 
 export const docCategories = ["Start", "Guides", "Operations"] as const;
@@ -248,6 +235,29 @@ Production builds using `zueDocs()` generate `/sitemap.xml` from the HTML pages 
 No sitemap-specific consumer configuration is needed on Vercel: ZueDocs uses Vercel's production project URL automatically. Cloudflare Pages deployment URLs are also detected. If a different deployment platform is used, an existing Astro `site` value is used instead.
 
 Raw `.md` endpoints and error pages are not included in the sitemap.
+
+## Build-time features
+
+The `zuedocs()` integration adds these without per-site setup:
+
+- **Callouts.** GitHub-style `> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, and `[!CAUTION]` blockquotes render as callouts.
+- **Social previews.** Every page gets a canonical URL, Open Graph and Twitter tags, and a generated 1200x630 image at `/og/<page>.png`. Set `siteConfig.ogImage` to a fixed image URL, or `false` to skip images.
+- **`llms.txt`.** `/llms.txt` lists every docs page as a link to its raw Markdown route. `/llms-full.txt` holds the full text of every page.
+- **Link checking.** The build fails when an internal link or `#anchor` points nowhere, listing each broken link.
+- **404 page.** A shared 404 page with search is added unless the site has its own `src/pages/404.astro`.
+- **Redirects.** A docs page can list old URLs under `redirectFrom` in its frontmatter.
+
+Options, all optional:
+
+```js
+zuedocs({
+  linkCheck: "error", // or "warn" / "off"
+  llmsTxt: true,
+  notFoundPage: true
+});
+```
+
+Canonical URLs and preview images need the deployed URL, which comes from Astro's `site` option or the production Vercel or Cloudflare Pages URL.
 
 ## Release model
 

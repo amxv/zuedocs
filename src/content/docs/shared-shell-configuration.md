@@ -1,6 +1,6 @@
 ---
 title: Shared shell configuration
-description: Configure product identity, accessible accent colors, footer content, navigation, logos, and shared documentation behavior without forking ZueDocs components.
+description: Configure product identity, accessible accent colors, navigation, logos, and shared documentation behavior without forking ZueDocs components.
 order: 4
 category: Structure
 summary: The supported configuration seam for branding a consumer while retaining the shared ZueDocs theme.
@@ -21,23 +21,7 @@ export const siteConfig = {
   logoHref: "/logo.svg",
   faviconHref: "/favicon.svg",
   accentColor: "#0369a1",
-  accentColorDark: "#38bdf8",
-  footerSections: [
-    {
-      title: "Example CLI",
-      text: "A concise description of the product and its primary job."
-    },
-    {
-      title: "Documentation",
-      text: "What readers can learn from this site."
-    },
-    {
-      title: "Repository",
-      linkPrefix: "Source: ",
-      linkHref: "https://github.com/example/example-cli",
-      linkLabel: "github.com/example/example-cli"
-    }
-  ]
+  accentColorDark: "#38bdf8"
 } as const;
 
 export const primaryNav = [
@@ -88,13 +72,9 @@ The ZueDocs Astro integration configures Shiki's CSS-variable theme. Shared styl
 
 Consumers do not need to select a separate Shiki theme or override generated token styles. Choose accessible `accentColor` and `accentColorDark` values, keep the `zuedocs()` Astro integration enabled, and let the package coordinate code blocks with the rest of the shell.
 
-## Configure footer content, not footer structure
+## Footer
 
-`footerSections` controls the consumer-specific copy inside the shared footer. The package owns the centered layout, repository action, responsive behavior, and `powered by zuedocs` attribution.
-
-If `footerSections` is omitted, the package displays neutral template copy. Real product sites should normally provide their own sections.
-
-The footer supports different section counts and long repository links without requiring local component forks.
+The shared footer shows the logo, product name, `strapline`, a repository link built from `repoUrl`, and the `powered by zuedocs` attribution. It has no per-site sections, so there is nothing to configure beyond those fields.
 
 ## Use the project title as the landing-page link
 
@@ -126,10 +106,52 @@ The package supplies:
 - Copy Page, raw Markdown, and agent actions
 - code-copy, tables, Mermaid diagrams, and fullscreen diagrams
 - raw Markdown routes when the consumer keeps the generated route handlers
+- an "On this page" outline that highlights the current section and shows reading progress
+- link icons beside headings that copy a direct link to the section
+- Previous and Next links at the end of each page, in Docs Map order
+- callouts from GitHub-style `> [!NOTE]` blockquotes
+- a shared 404 page with search, unless the site has its own `src/pages/404.astro`
+- canonical URLs, Open Graph and Twitter tags, and a generated social preview image for every page
+- `/llms.txt`, an index of the raw Markdown pages for coding agents, and `/llms-full.txt` with their full text
+- a build-time check that fails on broken internal links and anchors
+- `redirectFrom` frontmatter for renamed pages
 
 Consumers supply their own docs collection, categories, page descriptions, headings, and Markdown content. Updating the package should improve the shared behavior without requiring those documents to move.
 
 The `zuedocs()` Astro integration generates `/sitemap.xml` from the public HTML pages emitted by each consumer. Vercel's production project domain is detected automatically, so normal ZueDocs deployments do not need a site-specific sitemap package or config block. An explicit Astro `site` value remains the override for other deployment setups. Raw Markdown endpoints and error pages stay out of the sitemap.
+
+## Social previews
+
+Canonical URLs and social preview images need the deployed site URL. It comes from Astro's `site` option, or from the production Vercel or Cloudflare Pages URL when `site` is unset.
+
+By default the build renders a 1200 by 630 preview image for every page at `/og/<page>.png`, using the page title, description, category, logo, and dark accent color. To use one fixed image instead, set `ogImage` to a root-relative or absolute URL. Set `ogImage: false` to omit preview images entirely.
+
+```ts
+export const siteConfig = {
+  // ...
+  ogImage: "/social-card.png"
+} as const;
+```
+
+## Integration options
+
+The `zuedocs()` integration works without options. Each build-time feature can be adjusted:
+
+```js
+import zuedocs from "zuedocs/astro";
+
+export default defineConfig({
+  integrations: [
+    zuedocs({
+      linkCheck: "warn", // "error" (default), "warn", or "off"
+      llmsTxt: true, // write /llms.txt and /llms-full.txt
+      notFoundPage: true // add the shared 404 page
+    })
+  ]
+});
+```
+
+Use `linkCheck: "warn"` only as a temporary step while fixing existing broken links.
 
 ## Roll out a shared-shell release
 

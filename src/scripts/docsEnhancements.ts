@@ -1,4 +1,4 @@
-export {};
+import { enhanceDocsOutline, enhanceDocsPager, enhanceHeadingAnchors } from "./docsNavigation";
 
 const COPY_RESET_MS = 1600;
 const ICON_COPY = "⧉";
@@ -441,6 +441,9 @@ async function initDocsEnhancements() {
   enhanceDocsPageActions();
   enhanceMobileDocsSidebar();
   revealActiveSidebarLink();
+  enhanceHeadingAnchors();
+  enhanceDocsPager();
+  enhanceDocsOutline();
   await renderMermaidDiagrams(mermaidNodes);
 }
 

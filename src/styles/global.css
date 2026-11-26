@@ -1,3 +1,5 @@
+@import "./reading-aids.css";
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     color-scheme: dark;
@@ -1738,7 +1740,7 @@ body.has-docs-expanded-diagram {
 
 .site-footer__mast {
   display: grid;
-  grid-template-columns: minmax(12rem, 1fr) minmax(12rem, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 2rem;
   align-items: center;
   padding: 2.5rem 0;
@@ -1767,12 +1769,14 @@ body.has-docs-expanded-diagram {
 
 .site-footer__mast > p {
   max-width: 24rem;
+  text-align: center;
   color: var(--muted);
   font-size: 0.76rem;
   line-height: 1.45;
 }
 
 .site-footer__repo {
+  justify-self: end;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -1789,55 +1793,9 @@ body.has-docs-expanded-diagram {
   text-decoration: none;
 }
 
-.site-footer__inner {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.site-footer__section {
-  min-width: 0;
-  padding: 2.25rem 2rem;
-  border-right: 1px solid var(--line);
-}
-
-.site-footer__section:first-child {
-  padding-left: 0;
-}
-
-.site-footer__section:last-child {
-  padding-right: 0;
-  border-right: 0;
-}
-
-.site-footer__section .site-footer__title {
-  margin-bottom: 0.75rem;
-  color: var(--ink);
-  font-family: var(--font-heading);
-  font-size: 1.05rem;
-  font-weight: 500;
-  letter-spacing: -0.035em;
-}
-
-.site-footer__section p {
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-
-.site-footer__section a {
-  color: var(--ink);
-  text-decoration: underline;
-}
-
-.site-footer__section a:hover {
-  color: var(--signal);
-}
-
 .site-footer__base {
   display: flex;
+  border-top: 1px solid var(--line);
   align-items: center;
   justify-content: center;
   padding: 1rem 0 1.25rem;
@@ -1984,26 +1942,19 @@ body.has-docs-expanded-diagram {
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  .site-footer__mast,
-  .site-footer__inner {
+  .site-footer__mast {
     grid-template-columns: 1fr;
   }
   .site-footer__mast {
     gap: 1.25rem;
     padding: 2.5rem 0 2rem;
   }
+  .site-footer__mast > p {
+    text-align: left;
+  }
   .site-footer__repo {
+    justify-self: start;
     width: fit-content;
-  }
-  .site-footer__section,
-  .site-footer__section:first-child,
-  .site-footer__section:last-child {
-    padding: 1.75rem 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-  }
-  .site-footer__section:last-child {
-    border-bottom: 0;
   }
   .docs-shell {
     grid-template-columns: minmax(0, 1fr);

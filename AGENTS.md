@@ -20,7 +20,8 @@ This package is the shared source of truth for:
 - `SiteHeader.astro`
 - `SiteFooter.astro`
 - shared styles
-- `docsEnhancements`
+- `docsEnhancements` (plus `docsNavigation`: outline progress, heading links, Previous / Next)
+- the `zuedocs()` Astro integration in `src/integrations/`: search, sitemap, callouts, social preview images, `llms.txt`, link checking, the injected 404 page, and frontmatter redirects
 - scaffold CLI in `bin/zuedocs.js`
 - exported shared types in `src/types.ts`
 
@@ -43,7 +44,7 @@ Before editing package files, ask:
 
 Good example:
 
-- adding `footerSections` support in `siteConfig` so downstream repos can keep shared layout structure while customizing footer content
+- adding an optional `siteConfig` field so downstream repos can customize shared shell content without forking layouts
 
 Bad example:
 
@@ -70,9 +71,8 @@ At a high level it can carry:
 - `strapline`
 - `description`
 - `repoUrl`
-- optional `footerSections`
 
-If `footerSections` is omitted, the shared footer falls back to generic template copy. For real product docs sites, agents should usually define repo-specific `footerSections`.
+The shared footer is built from `name`, `strapline`, `logoHref` and `repoUrl`. `footerSections` is deprecated and ignored; it stays in the type only so older configs still type-check.
 
 ## Scaffold vs Migration
 
@@ -112,7 +112,7 @@ Do not scaffold over it. Migrate it to the package:
 
 1. add `zuedocs` as a dependency
 2. switch layouts/scripts to package imports
-3. move local branding/footer config into `src/data/docs.ts`
+3. move local branding config into `src/data/docs.ts`
 4. remove obsolete local shared-shell files
 5. validate serially with `check` then `build`
 

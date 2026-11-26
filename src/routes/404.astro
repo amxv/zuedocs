@@ -1,0 +1,59 @@
+---
+// Injected by the zuedocs() integration when a site has no src/pages/404 page
+// of its own. It reads the consumer's src/data/docs.ts so the header, footer,
+// and branding match the rest of the site.
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { PrimaryNavItem, SiteConfig } from "../types";
+
+interface DocsDataModule {
+  siteConfig?: SiteConfig;
+  primaryNav?: PrimaryNavItem[];
+}
+
+const modules = import.meta.glob<DocsDataModule>("/src/data/docs.ts", { eager: true });
+const data = Object.values(modules)[0] ?? {};
+
+const siteConfig: SiteConfig = data.siteConfig ?? {
+  name: "Docs",
+  strapline: "Documentation",
+  description: "Documentation",
+  repoUrl: "https://github.com/amxv/zuedocs"
+};
+const primaryNav: PrimaryNavItem[] = data.primaryNav ?? [{ href: "/docs", label: "Docs" }];
+---
+
+<BaseLayout
+  title={`Page not found | ${siteConfig.name}`}
+  description="This page does not exist or has moved."
+  siteConfig={siteConfig}
+  primaryNav={primaryNav}
+  noindex
+>
+  <section class="shell not-found">
+    <p class="section-label">404</p>
+    <h1>Page not found</h1>
+    <p class="not-found__lede">
+      This page does not exist or has moved. Try searching the docs, or start from the docs home.
+    </p>
+    <div class="not-found__actions">
+      <button class="not-found__button not-found__button--primary" type="button" data-not-found-search hidden>
+        Search docs
+      </button>
+      <a class="not-found__button" href="/docs">Docs home</a>
+      <a class="not-found__button" href="/">Home page</a>
+    </div>
+    <p class="not-found__path" data-not-found-path></p>
+  </section>
+</BaseLayout>
+
+<script>
+  const pathLabel = document.querySelector<HTMLElement>("[data-not-found-path]");
+  if (pathLabel) pathLabel.textContent = window.location.pathname;
+
+  const searchButton = document.querySelector<HTMLButtonElement>("[data-not-found-search]");
+  const searchTrigger = () => document.querySelector<HTMLButtonElement>("[data-docs-search] .pf-trigger-btn");
+  if (searchButton && document.querySelector("[data-docs-search]")) {
+    searchButton.hidden = false;
+    searchButton.addEventListener("click", () => searchTrigger()?.click());
+  }
+</script>

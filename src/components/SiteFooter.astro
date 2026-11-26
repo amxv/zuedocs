@@ -1,5 +1,5 @@
 ---
-import type { FooterSection, SiteConfig } from "../types";
+import type { SiteConfig } from "../types";
 
 interface Props {
   siteConfig: SiteConfig;
@@ -7,28 +7,6 @@ interface Props {
 
 const { siteConfig } = Astro.props;
 const brandImageHref = siteConfig.logoHref ?? siteConfig.faviconHref;
-
-const footerSections: readonly FooterSection[] = siteConfig.footerSections ?? [
-  {
-    title: siteConfig.name,
-    text:
-      "A reusable editorial docs shell for teams that want a credible first impression before they start adding product-specific prose."
-  },
-  {
-    title: "What ships in the template",
-    text:
-      "Landing page sections, a docs collection, table-of-contents pages, starter guidance, and enough deployment notes to ship on Vercel with a Cloudflare-managed domain."
-  },
-  {
-    title: "Template repo",
-    text:
-      "Adapt the content, point the nav to your repo, and publish the static output wherever your docs belong. The default source lives at",
-    linkHref: siteConfig.repoUrl,
-    linkLabel: siteConfig.repoUrl,
-    linkPrefix: " ",
-    linkSuffix: "."
-  }
-];
 ---
 
 <footer class="site-footer">
@@ -44,27 +22,6 @@ const footerSections: readonly FooterSection[] = siteConfig.footerSections ?? [
       <a class="site-footer__repo" href={siteConfig.repoUrl} target="_blank" rel="noreferrer">
         View repository <span aria-hidden="true">↗</span>
       </a>
-    </div>
-    <div class="site-footer__inner">
-      {footerSections.map((section) => (
-        <section class="site-footer__section">
-          <div>
-            <p class="site-footer__title">{section.title}</p>
-            <p>
-              {section.text}
-              {section.linkHref && (
-                <>
-                  {section.linkPrefix}
-                  <a href={section.linkHref} target="_blank" rel="noreferrer">
-                    {section.linkLabel ?? section.linkHref}
-                  </a>
-                  {section.linkSuffix}
-                </>
-              )}
-            </p>
-          </div>
-        </section>
-      ))}
     </div>
     <div class="site-footer__base">
       <a href="https://github.com/amxv/zuedocs/" target="_blank" rel="noreferrer">powered by zuedocs</a>

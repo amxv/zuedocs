@@ -48,7 +48,7 @@ This pattern works well for terminal applications and APIs. The parent repositor
 
 After scaffolding, replace the starter content in this order:
 
-1. Update `src/data/docs.ts` with product naming, repository URL, navigation, accents, and footer copy.
+1. Update `src/data/docs.ts` with product naming, repository URL, navigation, and accents.
 2. Replace the local homepage copy and composition in `src/pages/index.astro`.
 3. Replace the Markdown guides in `src/content/docs`.
 4. Adjust the category list in `src/data/docs.ts` and `src/content.config.ts` together.
@@ -62,7 +62,7 @@ Do not scaffold over an existing Astro application. Migrate it to the package:
 3. Import `zuedocs/layouts/DocsPageLayout.astro` from article routes.
 4. Import `zuedocs/components/DocsPageActions.astro` where the docs index exposes page actions.
 5. Import `zuedocs/docsEnhancements` once on docs routes.
-6. Move local naming, accents, repository links, and footer copy into `src/data/docs.ts`.
+6. Move local naming, accents, and repository links into `src/data/docs.ts`.
 7. Remove obsolete local copies of shared layouts, header, footer, theme controls, and documentation styles.
 
 Keep the product's Markdown, homepage, content schema, navigation, and deployment configuration local.

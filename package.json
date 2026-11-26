@@ -28,8 +28,9 @@
   },
   "dependencies": {
     "@pagefind/component-ui": "^1.5.2",
-    "pagefind": "^1.5.2",
-    "mermaid": "^11.16.0"
+    "@resvg/resvg-js": "^2.6.2",
+    "mermaid": "^11.16.0",
+    "pagefind": "^1.5.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
@@ -40,6 +41,7 @@
     "zuedocs-published": "npm:zuedocs@0.1.24"
   },
   "files": [
+    "assets",
     "bin",
     "src",
     "public",

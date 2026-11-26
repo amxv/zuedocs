@@ -2,6 +2,7 @@
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import "../styles/global.css";
+import { ogImagePathForPage, pageTitleForSocial } from "../seo";
 import type { PrimaryNavItem, SiteConfig } from "../types";
 
 interface Props {
@@ -10,6 +11,12 @@ interface Props {
   siteConfig: SiteConfig;
   primaryNav: PrimaryNavItem[];
   faviconHref?: string;
+  /** Absolute or root-relative social preview image. Overrides the generated one. */
+  image?: string;
+  /** Open Graph type. Docs pages pass "article". */
+  type?: "website" | "article";
+  /** Keeps the page out of search engines and skips canonical and preview tags. */
+  noindex?: boolean;
 }
 
 const {
@@ -17,10 +24,19 @@ const {
   description,
   siteConfig,
   primaryNav,
-  faviconHref: faviconHrefProp
+  faviconHref: faviconHrefProp,
+  image,
+  type: typeProp,
+  noindex = false
 } = Astro.props;
 
 const faviconHref = faviconHrefProp ?? siteConfig.faviconHref ?? siteConfig.logoHref ?? "/favicon.svg";
+const site = Astro.site;
+const type = typeProp ?? (/^\/docs\/.+/.test(Astro.url.pathname) ? "article" : "website");
+const canonicalHref = site && !noindex ? new URL(Astro.url.pathname, site).toString() : undefined;
+const socialTitle = pageTitleForSocial(title, siteConfig.name);
+const imageSource = image ?? siteConfig.ogImage ?? ogImagePathForPage(Astro.url.pathname);
+const socialImage = site && !noindex && imageSource !== false ? new URL(imageSource, site).toString() : undefined;
 const sitemapHref = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/sitemap.xml`;
 const accentStyle = [
   siteConfig.accentColor ? `--site-accent:${siteConfig.accentColor}` : "",
@@ -49,6 +65,21 @@ const accentStyle = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonicalHref && <link rel="canonical" href={canonicalHref} />}
+    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={type} />
+    {canonicalHref && <meta property="og:url" content={canonicalHref} />}
+    {socialImage && <meta property="og:image" content={socialImage} />}
+    {socialImage && <meta property="og:image:width" content="1200" />}
+    {socialImage && <meta property="og:image:height" content="630" />}
+    {socialImage && <meta property="og:image:alt" content={`${socialTitle} | ${siteConfig.name}`} />}
+    <meta name="twitter:card" content={socialImage ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={description} />
+    {socialImage && <meta name="twitter:image" content={socialImage} />}
     <link rel="icon" href={faviconHref} type="image/svg+xml" />
     <link rel="sitemap" href={sitemapHref} />
     <link rel="preconnect" href="https://fonts.googleapis.com">

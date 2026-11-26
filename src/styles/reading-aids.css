@@ -1,0 +1,295 @@
+/* Reading aids: outline progress, heading links, callouts, page pager, 404. */
+
+/* "On this page" progress ring and active section */
+.docs-toc .docs-toc__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.docs-toc__progress {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.docs-toc__progress svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.docs-toc__progress circle {
+  fill: none;
+  stroke-width: 2;
+}
+
+.docs-toc__progress-track {
+  stroke: var(--line);
+}
+
+.docs-toc__progress-bar {
+  stroke: var(--signal);
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 90ms linear;
+}
+
+.docs-toc a {
+  transition: color 140ms ease;
+}
+
+.docs-toc a.is-active {
+  color: var(--ink);
+}
+
+.docs-toc .docs-toc__item--depth-3 a {
+  padding-left: 0.75rem;
+  font-size: 0.8rem;
+}
+
+.docs-toc .docs-toc__item--depth-4 a {
+  padding-left: 1.5rem;
+  font-size: 0.8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-toc__progress-bar,
+  .docs-toc a {
+    transition: none;
+  }
+}
+
+/* Heading links */
+.docs-heading-anchor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-left: 0.35rem;
+  border-radius: 2px;
+  color: var(--muted);
+  vertical-align: middle;
+  opacity: 0;
+  transition: opacity 120ms ease, color 120ms ease;
+}
+
+.docs-heading-anchor svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.docs-copy :is(h2, h3, h4):hover .docs-heading-anchor,
+.docs-heading-anchor:focus-visible,
+.docs-heading-anchor.is-copied {
+  opacity: 1;
+}
+
+.docs-heading-anchor:hover,
+.docs-heading-anchor.is-copied {
+  color: var(--signal);
+  text-decoration: none;
+}
+
+.docs-heading-anchor:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@media (hover: none) {
+  .docs-heading-anchor {
+    opacity: 0.55;
+  }
+}
+
+/* Callouts: GitHub-style > [!NOTE] blockquotes */
+.docs-callout {
+  --callout-color: #0969da;
+  margin: 2rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--callout-color);
+  border-radius: 2px;
+  background: var(--surface-muted);
+}
+
+.docs-callout--tip { --callout-color: #1a7f37; }
+.docs-callout--important { --callout-color: #8250df; }
+.docs-callout--warning { --callout-color: #9a6700; }
+.docs-callout--caution { --callout-color: #cf222e; }
+
+:root[data-theme="dark"] .docs-callout { --callout-color: #58a6ff; }
+:root[data-theme="dark"] .docs-callout--tip { --callout-color: #3fb950; }
+:root[data-theme="dark"] .docs-callout--important { --callout-color: #a371f7; }
+:root[data-theme="dark"] .docs-callout--warning { --callout-color: #d29922; }
+:root[data-theme="dark"] .docs-callout--caution { --callout-color: #f85149; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .docs-callout { --callout-color: #58a6ff; }
+  :root:not([data-theme]) .docs-callout--tip { --callout-color: #3fb950; }
+  :root:not([data-theme]) .docs-callout--important { --callout-color: #a371f7; }
+  :root:not([data-theme]) .docs-callout--warning { --callout-color: #d29922; }
+  :root:not([data-theme]) .docs-callout--caution { --callout-color: #f85149; }
+}
+
+.docs-copy .docs-callout__title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.45rem;
+  color: var(--callout-color);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-callout__title::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.docs-callout > :last-child {
+  margin-bottom: 0;
+}
+
+/* Previous / Next */
+.docs-pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 4.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--line);
+}
+
+.docs-pager__link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
+  transition: border-color 140ms ease;
+}
+
+.docs-pager__link--next {
+  grid-column: 2;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.docs-pager__link:hover {
+  border-color: var(--signal);
+  text-decoration: none;
+}
+
+.docs-pager__label {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-pager__title {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.docs-pager__link:hover .docs-pager__title {
+  color: var(--signal);
+}
+
+@media (max-width: 640px) {
+  .docs-pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .docs-pager__link--next {
+    grid-column: auto;
+  }
+}
+
+/* 404 */
+.not-found {
+  min-height: calc(100dvh - 19rem);
+  padding: clamp(5rem, 12vw, 9rem) 0;
+}
+
+.not-found h1 {
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.not-found__lede {
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.not-found__button {
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 0.82rem var(--font-sans);
+  cursor: pointer;
+}
+
+.not-found__button[hidden] {
+  display: none;
+}
+
+.not-found__button:hover {
+  border-color: var(--ink);
+  text-decoration: none;
+}
+
+.not-found__button--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.not-found__button--primary:hover {
+  border-color: var(--signal);
+  background: var(--signal);
+}
+
+.not-found__path {
+  margin-top: 2.5rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  word-break: break-all;
+}
