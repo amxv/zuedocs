@@ -417,11 +417,30 @@ function enhanceMobileDocsSidebar() {
   });
 }
 
+function revealActiveSidebarLink() {
+  const sidebar = document.querySelector<HTMLElement>("[data-docs-sidebar], .docs-sidebar");
+  const active = sidebar?.querySelector<HTMLElement>(".is-active, [aria-current='page']");
+  if (!sidebar || !active || sidebar.scrollHeight <= sidebar.clientHeight) return;
+
+  const sidebarRect = sidebar.getBoundingClientRect();
+  const activeRect = active.getBoundingClientRect();
+  // Before the page scrolls, the sticky rail can start below its sticky offset,
+  // so its lower edge may sit under the viewport fold.
+  const visibleTop = Math.max(sidebarRect.top, 0);
+  const visibleBottom = Math.min(sidebarRect.bottom, window.innerHeight);
+  if (activeRect.top >= visibleTop && activeRect.bottom <= visibleBottom) return;
+
+  const activeTop = activeRect.top - sidebarRect.top + sidebar.scrollTop;
+  const visibleHeight = Math.max(visibleBottom - visibleTop, activeRect.height);
+  sidebar.scrollTop = activeTop - (visibleHeight - activeRect.height) / 2;
+}
+
 async function initDocsEnhancements() {
   const mermaidNodes = enhanceCodeBlocks();
   enhanceTables();
   enhanceDocsPageActions();
   enhanceMobileDocsSidebar();
+  revealActiveSidebarLink();
   await renderMermaidDiagrams(mermaidNodes);
 }
 

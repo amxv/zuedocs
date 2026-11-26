@@ -983,8 +983,32 @@ body.has-docs-search-open {
 
 .docs-sidebar,
 .docs-toc {
+  --docs-rail-top: 7.25rem;
   position: sticky;
-  top: 7.25rem;
+  top: var(--docs-rail-top);
+  max-height: calc(100vh - var(--docs-rail-top));
+  max-height: calc(100dvh - var(--docs-rail-top));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 2rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.docs-sidebar::-webkit-scrollbar,
+.docs-toc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.docs-sidebar::-webkit-scrollbar-thumb,
+.docs-toc::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.docs-sidebar::-webkit-scrollbar-track,
+.docs-toc::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .docs-sidebar__group {
@@ -2011,6 +2035,7 @@ body.has-docs-expanded-diagram {
     display: block;
     width: min(20rem, calc(100vw - 3rem));
     max-width: 100%;
+    max-height: none;
     padding: 1.25rem;
     overflow-y: auto;
     border-right: 1px solid var(--line);
